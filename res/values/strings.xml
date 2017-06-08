@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Five</string>
+    <string name="title_">中山大学课外体育积分电子认证系统</string>
+    <string name="username_">用户名： </string>
+    <string name="usernamehint_">请输入用户名          </string>
+    <string name="password_"> 密码： </string>
+    <string name="passwordhint_">请输入密码</string>
+    <string name="student">学生</string>
+    <string name="teacher">老师</string>
+    <string name="club">社团</string>
+    <string name="manger">管理者</string>
+    <string name="login">登录</string>
+    <string name="signin">注册</string>
+</resources>

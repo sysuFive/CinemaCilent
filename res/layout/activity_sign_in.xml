@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.example.lenovo.five_version1.MainActivity">
+
+    <TableLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow>
+            <TextView
+                android:textSize="18sp"
+                android:text="@string/username_"
+                android:gravity="right"
+                />
+            <EditText
+                android:id="@+id/signin_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/usernamehint_"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                />
+
+        </TableRow>
+        <TableRow
+            android:layout_marginTop="10dp"
+            >
+            <TextView
+                android:gravity="right"
+                android:textSize="18sp"
+                android:text="@string/password_"
+                android:layout_marginLeft="20dp" />
+
+            <EditText
+                android:id="@+id/signin_password"
+                android:layout_weight="1"
+                android:inputType="textPassword"
+                android:hint="@string/passwordhint_"
+                android:textSize="18sp"
+
+                />
+        </TableRow>
+        <TableRow
+            android:layout_marginTop="10dp"
+            >
+            <TextView
+                android:gravity="right"
+                android:textSize="18sp"
+                android:text="确认密码"
+                android:layout_marginLeft="20dp" />
+
+            <EditText
+                android:id="@+id/signin_repassword"
+                android:layout_weight="1"
+                android:inputType="textPassword"
+                android:textSize="18sp"
+
+                />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      注册      "
+            android:textColor="#ffffff"
+            android:id = "@+id/signin_signin"
+            android:textSize="18dp"
+            android:radius="10dp"
+
+            />
+
+
+    </LinearLayout>
+</LinearLayout>
