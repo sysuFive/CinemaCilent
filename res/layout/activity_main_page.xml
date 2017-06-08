@@ -22,6 +22,12 @@
             android:text="地点"
             android:layout_alignBottom="@+id/search_txt"
             />
+        <Button
+
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@mipmap/ic_launcher"
+            android:id="@+id/locate"/>
         <EditText
             android:id="@+id/search_txt"
             android:layout_weight="1"
@@ -56,13 +62,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ListView
-            android:layout_above="@id/bottom"
+            android:layout_above="@+id/bottom"
             android:id="@+id/movielist"
             android:layout_marginBottom="6dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
         <RelativeLayout
+
             android:id="@+id/bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
