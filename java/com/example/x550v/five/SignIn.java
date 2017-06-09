@@ -39,7 +39,7 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        findview();
+        findViews();
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,7 +118,7 @@ public class SignIn extends AppCompatActivity {
 
     }
 
-    public void findview() {
+    public void findViews() {
         username = (EditText) findViewById(R.id.signin_username);
         password = (EditText) findViewById(R.id.signin_password);
         repassword = (EditText) findViewById(R.id.signin_repassword);

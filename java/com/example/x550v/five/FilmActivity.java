@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,7 +42,15 @@ public class FilmActivity extends AppCompatActivity {
             String lang = bundle.getString("lang");
             int ImgRid = bundle.getInt("img");
             // TODO: 2017/6/8 set Views
+
         }
+        buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toMainPage = new Intent(FilmActivity.this, MainPage.class);
+                startActivity(toMainPage);
+            }
+        });
     }
 
     public void findViews() {

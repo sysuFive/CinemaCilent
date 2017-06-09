@@ -57,23 +57,12 @@ public class MainPage extends AppCompatActivity {
     int page = 0;
     ArrayList<HashMap<String, Object>> filmData, cinemaData;
 
-    public  void findview() {
-        clickmovie = (Button) findViewById(R.id.clickmovie);
-        clickplace = (Button) findViewById(R.id.clickplace);
-        clickself = (Button) findViewById(R.id.clickself);
-        list = (ListView)findViewById(R.id.movielist);
-        locationManager = (LocationManager) getSystemService((LOCATION_SERVICE));
-        filmData = new ArrayList<>();
-        cinemaData = new ArrayList<>();
-        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-        MODE = sharedPreferences.getInt("mode", FILM);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-        findview();
+        findViews();
+        getCity();
         if (MODE == FILM)
             getFilms();
         else
@@ -113,9 +102,14 @@ public class MainPage extends AppCompatActivity {
                     intent.putExtras(bundle);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putInt("mode", CINEMA);
+                    editor.putInt("filmId", (int)one.get("filmId"));
                     editor.apply();
                 } else {
-                    intent = new Intent(MainPage.this, MainPage.class);
+                    intent = new Intent(MainPage.this, TheaterActivity.class);
+                    Map<String, Object> one  = filmData.get(position);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("CinemaId", (int)one.get("CinemaId"));
+                    editor.apply();
                 }
                 startActivity(intent);
             }
@@ -123,8 +117,21 @@ public class MainPage extends AppCompatActivity {
 
     }
 
+    public void findViews() {
+        clickmovie = (Button) findViewById(R.id.clickmovie);
+        clickplace = (Button) findViewById(R.id.clickplace);
+        clickself = (Button) findViewById(R.id.clickself);
+        list = (ListView)findViewById(R.id.movielist);
+        locationManager = (LocationManager) getSystemService((LOCATION_SERVICE));
+        filmData = new ArrayList<>();
+        cinemaData = new ArrayList<>();
+        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
+        MODE = sharedPreferences.getInt("mode", FILM);
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+    }
+
     private void getFilms() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
         final Map<String, String> params = new HashMap<>();
         String url = Controller.SERVER + Controller.FILM;
         final PostRequest request = new PostRequest(Request.Method.GET, url, params,
@@ -214,6 +221,7 @@ public class MainPage extends AppCompatActivity {
                                     // TODO: 2017/6/8 get cinema info
                                     tmp.put("name", one.get("name"));
                                     tmp.put("location", one.get("location"));
+                                    tmp.put("CinemaId", one.get("CinemaId"));
                                     cinemaData.add(tmp);
                                 }
                                 sa = new SimpleAdapter(MainPage.this, cinemaData, R.layout.theateritems,
@@ -240,10 +248,22 @@ public class MainPage extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void getUserInfo() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        final Map<String, String> params = new HashMap<>();
-        String url = Controller.SERVER + Controller.FILM;
+    private void getLatLon() {
+        if (!checkPermission())
+            return;
+        locationManager.requestLocationUpdates(bestProvider, 0, 0, locationListener);
+        locationManager.getLastKnownLocation(bestProvider);
+        curLocation = locationManager.getLastKnownLocation(bestProvider);
+        if (curLocation != null) {
+            latitude = curLocation.getLatitude();
+            longitude = curLocation.getLongitude();
+        }
+    }
+
+    private void getCity() {
+        getLatLon();
+        String url = urlHead + latitude + "," + longitude + urlEnd;
+        Map<String, String> params = new HashMap<>();
         PostRequest request = new PostRequest(Request.Method.GET, url, params,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -253,13 +273,15 @@ public class MainPage extends AppCompatActivity {
                             return;
                         }
                         try {
-                            int status = response.getInt("status");
-                            boolean success = status == 1;
-                            if (success) {
-
-                            } else {
-                                Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                            JSONObject results = (JSONObject) response.get("result");
+                            if (results == null) {
+                                Log.e("get city error", "null");
+                                return;
                             }
+                            address = results.getString("address");
+                            city = ((JSONObject) results.get("address_component")).getString("city");
+                            String code = ((JSONObject) results.get("ad_info")).getString("adcode");
+                            cityCode = Integer.parseInt(code);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -273,19 +295,6 @@ public class MainPage extends AppCompatActivity {
         });
         requestQueue.add(request);
     }
-
-    private void getLatLon() {
-        if (!checkPermission())
-            return;
-        locationManager.requestLocationUpdates(bestProvider, 0, 0, locationListener);
-        locationManager.getLastKnownLocation(bestProvider);
-        curLocation = locationManager.getLastKnownLocation(bestProvider);
-        if (curLocation != null) {
-            latitude = curLocation.getLatitude();
-            longitude = curLocation.getLongitude();
-        }
-    }
-
 
     // return true if PERMISSION_GRANTED else false
     private boolean checkPermission() {
