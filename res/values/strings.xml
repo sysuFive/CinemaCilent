@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">Movie</string>
+    <string name="app_name">FIVE</string>
     <string name="username_">用户名： </string>
-    <string name="usernamehint_">请输入用户名          </string>
+    <string name="usernamehint_">请输入用户名</string>
     <string name="password_"> 密码： </string>
     <string name="passwordhint_">请输入密码</string>
-    <string name="student">学生</string>
     <string name="login">登录</string>
     <string name="signin">注册</string>
+    <string name="email">邮箱：</string>
+    <string name="emailhint">请输入邮箱</string>
 </resources>

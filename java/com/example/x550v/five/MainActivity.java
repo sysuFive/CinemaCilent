@@ -3,6 +3,7 @@ package com.example.x550v.five;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,14 +31,19 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public EditText username, password;
-    public Button login, signin;
-
+    public Button login, signIn;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
+        boolean isLogin = sharedPreferences.getBoolean("login", false);
+        if (isLogin) {
+            Intent intent = new Intent(MainActivity.this, MainPage.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.activity_main);
-
         findViews();
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
                 } else  {
                     //  SEND TO SERVER
                     //username password
-                    sendRequest();
+                    Login();
                 }
             }
         });
 
-        signin.setOnClickListener(new View.OnClickListener() {
+        signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent t = new Intent(MainActivity.this, SignIn.class);
@@ -64,13 +70,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void sendRequest() {
+    private void Login() {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         Map<String, String> params = new HashMap<String, String>();
         params.put("username", username.getText().toString());
         params.put("password", Controller.MD5(password.getText().toString()));
-        JSONObject json = new JSONObject(params);
-        JsonRequest<JSONObject> jsonRequest = new JsonObjectRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, null,
+        PostRequest jsonRequest = new PostRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -82,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
                             int status = response.getInt("status");
                             boolean success = status == 1;
                             if (success) {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putBoolean("login", true);
+                                editor.apply();
                                 Intent intent = new Intent(MainActivity.this, UserInfo.class);
                                 intent.putExtra("json", response.toString());
                                 startActivity(intent);
@@ -106,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         login = (Button) findViewById(R.id.login);
-        signin =  (Button) findViewById(R.id.signin);
+        signIn =  (Button) findViewById(R.id.signin);
     }
 
     private View.OnClickListener clickLogin = new View.OnClickListener() {

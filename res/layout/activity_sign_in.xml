@@ -7,24 +7,36 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context="com.example.lenovo.five_version1.MainActivity">
+    android:orientation="vertical">
 
     <TableLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TableRow>
             <TextView
                 android:textSize="18sp"
                 android:text="@string/username_"
-                android:gravity="right"
-                />
+                android:gravity="right" />
             <EditText
                 android:id="@+id/signin_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/usernamehint_"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                />
+
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:textSize="18sp"
+                android:text="@string/email"
+                android:gravity="right" />
+            <EditText
+                android:id="@+id/signin_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/emailhint"
                 android:layout_weight="1"
                 android:textSize="18sp"
                 />
@@ -54,7 +66,7 @@
             <TextView
                 android:gravity="right"
                 android:textSize="18sp"
-                android:text="确认密码"
+                android:text="确认密码："
                 android:layout_marginLeft="20dp" />
 
             <EditText

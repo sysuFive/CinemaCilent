@@ -124,13 +124,6 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         // TODO: 2017/6/7
     }
 
-    private void Retofit() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .build();
-        GitHubService service = retrofit.create(GitHubService.class);
-        Call<JSONObject> repos = service.listRepos("octocat");
-    }
 
     public  static  String MD5(String src) {
         String res = "";

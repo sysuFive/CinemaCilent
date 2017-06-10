@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PayPage extends AppCompatActivity {
-    public TextView remain_time, moviename, moviedate, theaterandsess, seat, price;
+    public TextView remain_time, movieName, movieDate, theaterAddress, seat, price;
     public Button pay;
     int orderId = -1;
 
@@ -73,13 +73,15 @@ public class PayPage extends AppCompatActivity {
 
     private void setAttr() {
         SharedPreferences sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-        moviename.setText(sharedPreferences.getString("filmName", ""));
-        moviedate.setText(sharedPreferences.getString("beginTime", ""));
-        theaterandsess.setText(sharedPreferences.getString("hall", ""));
+        movieName.setText(sharedPreferences.getString("filmName", ""));
+        movieDate.setText(sharedPreferences.getString("beginTime", ""));
+        theaterAddress.setText(sharedPreferences.getString("hall", ""));
         Intent intent = getIntent();
         if (intent == null)
             return;
         Bundle bundle = intent.getExtras();
+        if (bundle == null)
+            return;
         orderId = bundle.getInt("orderId");
         ArrayList<String> selectedSeat = bundle.getStringArrayList("selectedSeat");
         float prices = bundle.getFloat("price");
@@ -100,9 +102,9 @@ public class PayPage extends AppCompatActivity {
 
     public void findViews() {
         remain_time = (TextView) findViewById(R.id.remain_time);
-        moviename = (TextView) findViewById(R.id.moviename);
-        moviedate = (TextView) findViewById(R.id.moviedate);
-        theaterandsess = (TextView) findViewById(R.id.theateraddress);
+        movieName = (TextView) findViewById(R.id.moviename);
+        movieDate = (TextView) findViewById(R.id.moviedate);
+        theaterAddress = (TextView) findViewById(R.id.theateaddress);
         seat = (TextView) findViewById(R.id.seat);
         price = (TextView) findViewById(R.id.price);
         pay = (Button) findViewById(R.id.pay);

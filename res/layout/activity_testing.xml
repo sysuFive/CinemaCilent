@@ -7,17 +7,15 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context="com.example.x550v.five.SmallActivity">
-    <TextView
-        android:id="@+id/text"
+    android:orientation="vertical">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test"
-        android:textSize="25sp"
-        />
-    <Button
-        android:id="@+id/button"
-        android:layout_width="40dp"
-        android:layout_height="40dp" />
+        android:id="@+id/moviename"/>
 </LinearLayout>

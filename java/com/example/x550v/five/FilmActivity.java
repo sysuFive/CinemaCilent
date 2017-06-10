@@ -10,9 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +23,6 @@ public class FilmActivity extends AppCompatActivity {
     private ImageView img;
     private TextView name, score, time,type,info;
     private Button buy;
-    private RecyclerView recyclerView;
     Bundle bundle;
 
     @Override
@@ -32,25 +34,34 @@ public class FilmActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             bundle = intent.getExtras();
+            if (bundle == null)
+                return;
             String filmName = bundle.getString("filmName");
-            String filmActor = bundle.getString("filmActor");
+            String filmActor = "主演：" + bundle.getString("filmActor");
             String filmRate = bundle.getString("filmRate");
+            if (filmRate.length() > 3)
+                filmRate = filmRate.substring(0, 3);
             String filmType = bundle.getString("filmType");
             String publishTime = bundle.getString("publishTime");
+            long pt = Long.parseLong(publishTime);
+            Date d = new Date(pt);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd", Locale.CHINA);
+            publishTime = formatter.format(d);
             String lastTime = bundle.getString("lastTime");
-            String director = bundle.getString("director");
-            String lang = bundle.getString("lang");
+            float lt = Float.parseFloat(lastTime);
+            int minu = (int)lt / 60;
+            lastTime = minu + "分钟";
+            String director = "导演：" + bundle.getString("director");
+            String lang = "语言" + bundle.getString("lang");
             int ImgRid = bundle.getInt("img");
             // TODO: 2017/6/8 set Views
-
+            name.setText(filmName);
+            score.setText(filmRate);
+            time.setText(publishTime);
+            info.setText(lastTime);
+            type.setText(filmType);
         }
-        buy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toMainPage = new Intent(FilmActivity.this, MainPage.class);
-                startActivity(toMainPage);
-            }
-        });
+
     }
 
     public void findViews() {
@@ -61,20 +72,16 @@ public class FilmActivity extends AppCompatActivity {
         type = (TextView) findViewById(R.id.type);
         info = (TextView) findViewById(R.id.info);
         buy = (Button) findViewById(R.id.buy);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
     }
 
     public void setListeners() {
-
+        buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toMainPage = new Intent(FilmActivity.this, MainPage.class);
+                startActivity(toMainPage);
+            }
+        });
     }
 
-    public void setRecycleView() {
-        LinearLayoutManager manager = new LinearLayoutManager(FilmActivity.this);
-        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setLayoutManager(manager);
-        ArrayList<PersonInfo> persons = new ArrayList<>();
-        // get person info
-        FilmInfoAdapter adapter = new FilmInfoAdapter(FilmActivity.this, persons);
-        recyclerView.setAdapter(adapter);
-    }
 }
