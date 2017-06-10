@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, String> params = new HashMap<String, String>();
         params.put("username", username.getText().toString());
         params.put("password", Controller.MD5(password.getText().toString()));
-        PostRequest jsonRequest = new PostRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, params,
+        PostRequest request = new PostRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -88,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
                             boolean success = status == 1;
                             if (success) {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("cookie", response.getString("Cookie"));
                                 editor.putBoolean("login", true);
                                 editor.apply();
-                                Intent intent = new Intent(MainActivity.this, UserInfo.class);
-                                intent.putExtra("json", response.toString());
+                                Intent intent = new Intent(MainActivity.this, MainPage.class);
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(MainActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
@@ -106,8 +106,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("response error", error.toString());
                 }
             });
-        requestQueue.add(jsonRequest);
-        requestQueue.start();
+        String cookie = sharedPreferences.getString("Cookie", "");
+//        if (!cookie.equals(""))
+//            request.setSendCookie(cookie);
+        requestQueue.add(request);
     }
 
     public void findViews() {

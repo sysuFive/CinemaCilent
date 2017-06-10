@@ -223,12 +223,19 @@ public class MainPage extends AppCompatActivity {
                 Log.e("response error", error.toString());
             }
         });
+        String cookie = sharedPreferences.getString("Cookie", "");
+//        if (!cookie.equals(""))
+//            request.setSendCookie(cookie);
         requestQueue.add(request);
     }
 
     private void getCinemas() {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
+        cityCode = 0;
+        longitude = 0;
+        latitude = 0;
+        page = 0;
         params.put("citycode", "" + cityCode);
         params.put("longtitude", "" + longitude);
         params.put("latitude", "" + latitude);
@@ -248,23 +255,23 @@ public class MainPage extends AppCompatActivity {
                             CinemaAdapter ca;
                             ArrayList<CinemaCard> cards = new ArrayList<>();
                             if (success) {
-                                JSONObject film = response.getJSONObject("message");
-                                JSONArray films = film.getJSONArray("Cinema");
+                                JSONArray films = response.getJSONArray("message");
                                 for (int i = 0; i < films.length(); ++i) {
                                     JSONObject one = (JSONObject) films.get(i);
                                     HashMap<String, Object> tmp = new HashMap<>();
                                     // TODO: 2017/6/8 get cinema info
                                     String name = one.getString("name");
-                                    String address = one.getString("location");
+                                    String address = one.getString("address");
                                     String phone = one.getString("phone");
                                     tmp.put("name", name);
                                     tmp.put("location", address);
                                     tmp.put("phone", phone);
-                                    tmp.put("CinemaId", one.get("CinemaId"));
+                                    tmp.put("CinemaId", one.get("id"));
                                     cinemaData.add(tmp);
                                     // TODO: 2017/6/10  get img
                                     int rid = R.drawable.test;
                                     cards.add(new CinemaCard(name, address, phone, rid));
+                                    ++page;
                                 }
                             } else {
                                 Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
@@ -274,7 +281,7 @@ public class MainPage extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(View view, int position, CinemaCard item) {
                                     Intent intent = new Intent(MainPage.this, TheaterActivity.class);
-                                    Map<String, Object> one  = filmData.get(position);
+                                    Map<String, Object> one  = cinemaData.get(position);
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
                                     editor.putInt("CinemaId", (int)one.get("CinemaId"));
                                     editor.apply();

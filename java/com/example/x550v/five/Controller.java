@@ -44,14 +44,31 @@ import retrofit2.Retrofit;
 public class Controller extends AsyncTask<String, Integer, JSONObject> {
 
     public static String SERVER = "http://172.18.69.88:8080";
+
     public static String LOGIN =  "/login";
     public static String REGISTER = "/register";
+
     public static String CINEMA = "/cinema";
+    public static String CINEMAPIC = "/cinemaPic/cover/";
+
+    public static String CINEMAREMARK = "/cinemaRemark/post";
+    public static String CINEMAREMARKBYID = "/cinemaRemark/getByCinemaId/";
+    public static String CINEMAREMARKSELF = "/cinemaRemark/getMyCinemaRemark";
+
     public static String FILM = "/film";
+    public static String FILMBYID = "/filmByCinemaId";
+    public static String FILMPIC = "/filmPic/cover/";
+    public static String FILMSTILL = "/filmPic/still/";
+
+    public static String FILMREMARK = "/filmRemark/post";
+    public static String FILMREMARKBYID = "/filmRemark/getByFilmId/";
+    public static String FILMREMARKSELF = "/filmRemark/getMyFilmRemark";
+
     public static String FILMSESSION = "/filmsession";
-    public static String SIT = "/sit";
+    public static String SIT = "/sit/";
     public static String MAKE = "/reservation/make";
-    public static String PAY = "/reservation/sysupay";
+    public static String PAY = "/sysupay";
+    public static String WALLET = "/queryWallet";
 
     public static JSONObject response = null;
 
@@ -140,12 +157,7 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
     }
 
     public static String getCurTime() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.CHINA);
-        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-        return formatter.format(curDate);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        return df.format(new Date());
     }
-
-
-
-
 }

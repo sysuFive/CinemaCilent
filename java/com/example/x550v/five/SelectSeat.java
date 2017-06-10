@@ -162,9 +162,8 @@ public class SelectSeat extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
         SessionId = sharedPreferences.getInt("SessionId", -1);
-        params.put("filmSessionId", "" + SessionId);
-        String url = Controller.SERVER + Controller.SIT;
-        PostRequest request = new PostRequest(Request.Method.POST, url, params,
+        String url = Controller.SERVER + Controller.SIT + SessionId;
+        PostRequest request = new PostRequest(Request.Method.GET, url, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(final JSONObject response) {
@@ -176,7 +175,7 @@ public class SelectSeat extends AppCompatActivity {
                             col = -1;
                             row = -1;
                             allSeat = new boolean[100][100];
-                            JSONArray seats = response.getJSONArray("sit");
+                            JSONArray seats = response.getJSONArray("sits");
                             for (int i = 0; i < seats.length(); ++i) {
                                 JSONObject seat = seats.getJSONObject(i);
                                 int x = seat.getInt("x");

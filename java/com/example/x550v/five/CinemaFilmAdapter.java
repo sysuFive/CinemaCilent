@@ -39,7 +39,7 @@ public class CinemaFilmAdapter extends RecyclerView.Adapter<CinemaFilmAdapter.Vi
 
     @Override
     public CinemaFilmAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view =  mInflater.inflate(R.layout.movieitems, viewGroup,  false);
+        View view =  mInflater.inflate(R.layout.movieintheateritem, viewGroup,  false);
         view.setOnClickListener(this);
         CinemaFilmAdapter.ViewHolder holder =  new CinemaFilmAdapter.ViewHolder(view);
         holder.img = (ImageView) view.findViewById(R.id.movieimg);

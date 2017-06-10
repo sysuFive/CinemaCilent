@@ -62,7 +62,7 @@ public class SignIn extends AppCompatActivity {
     }
 
     private  boolean isValidMailbox(String email) {
-        return email.matches("/^\\w+@\\w+\\.\\w+$/");
+        return true;
     }
 
 
