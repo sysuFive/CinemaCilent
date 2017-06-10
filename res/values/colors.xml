@@ -11,6 +11,7 @@
     <color name="color_background_day">#F6F6F6</color>
     <color name="color_background_night">#2B2B2B</color>
     <color name="color_division">#C7C7C7</color>
+    <color name="forgive">#2BCC6E</color>
 >
 
 </resources>

@@ -5,16 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
-    android:layout_marginBottom="@dimen/four_dp"
-    android:layout_marginLeft="@dimen/space"
-    android:layout_marginRight="@dimen/space"
-    android:layout_marginTop="@dimen/four_dp">
+    app:cardElevation="10dp"
+    >
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/movie_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:background="#ffffff"
         android:padding="@dimen/four_dp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp">

@@ -1,103 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/space2x"
-    >
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false"
+            app:collapsedTitleTextAppearance="?attr/toolbarStyle"
+            app:contentScrim="#3F51B5"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+
+            <com.flaviofaria.kenburnsview.KenBurnsView
+                android:id="@+id/backdrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:src="@drawable/test"
+                />
+
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:layout_collapseMode="pin">
+                <Button
+                    android:id="@+id/backbtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="left"
+                    android:background="@drawable/back"
+                    />
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/moviedetail"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/comment"
+        android:background="@color/colorAccent"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|end" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <LinearLayout
-            android:id="@+id/detail_rating_layout"
+        android:orientation="vertical"
+        android:background="@drawable/layoutcontainer"
+        android:layout_gravity="bottom">
+        <Button
+            android:id="@+id/buy"
+            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/space2x"
-            android:layout_marginTop="@dimen/space"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <com.iarcuschin.simpleratingbar.SimpleRatingBar
-                android:id="@+id/detail_rating_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srb_drawBorderEnabled="false"
-                app:srb_fillColor="@color/colorAccent"
-                app:srb_isIndicator="true"
-                app:srb_starBackgroundColor="@android:color/darker_gray"
-                app:srb_starSize="25dp"
-                app:srb_starsSeparation="@dimen/four_dp"/>
-
-            <TextView
-                android:id="@+id/detail_rating_info_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="7.7"
-                android:layout_marginLeft="@dimen/space2x"/>
-        </LinearLayout>
-        <TextView
-            android:id="@+id/detail_release_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="上映时间 ..."/>
-
-
-        <TextView
-            android:id="@+id/detail_release_info_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/text_size_18sp"
-            tools:text="xxx"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space2x"
-            android:text="类型"/>
-
-        <TextView
-            android:id="@+id/detail_type_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/text_size_18sp"
-            tools:text="爱情，动作"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space2x"
-            android:text="主演"/>
-
-        <TextView
-            android:id="@+id/detail_starring_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/text_size_18sp"
-            tools:text="xxx, xxx"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space2x"
-            android:text="剧情"/>
-
-        <TextView
-            android:id="@+id/detail_story_brief_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/text_size_16sp"
-            tools:text="xxx, xxx"/>
-
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/buttongreen"
+            android:layout_marginBottom="5dp"
+            android:text="立即购票"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            />
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+
+
+</android.support.design.widget.CoordinatorLayout>
+
+
