@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
-    app:cardElevation="20dp"
+    app:cardElevation="10dp"
     >
 
     <android.support.constraint.ConstraintLayout
@@ -36,7 +36,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="神奇女侠"/>
+            android:text="电影名称"/>
 
         <TextView
             android:id="@+id/movieinfo"
@@ -47,7 +47,7 @@
             android:layout_marginTop="@dimen/four_dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/moviename"
-            android:text="动作"
+            android:text="动作 冒险"
             tools:layout_height="@dimen/space2x"/>
 
         <com.iarcuschin.simpleratingbar.SimpleRatingBar
@@ -87,7 +87,7 @@
             android:layout_marginTop="@dimen/space"
             app:layout_constraintTop_toBottomOf="@+id/movie_rating_bar"
             app:layout_constraintRight_toRightOf="parent"
-            tools:text="xxxxxxx"/>
+            tools:text="主演：xxx，xxx"/>
 
     </android.support.constraint.ConstraintLayout>
 

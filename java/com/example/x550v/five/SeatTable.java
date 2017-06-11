@@ -1,6 +1,5 @@
 // https://github.com/qifengdeqingchen/SeatTable.git
 package com.example.x550v.five;
-
 import android.animation.Animator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
@@ -890,7 +889,7 @@ public class SeatTable extends View {
     ArrayList<Integer> selects = new ArrayList<>();
 
     public ArrayList<String> getSelectedSeat(){
-        ArrayList<String> results = new ArrayList<>();
+        ArrayList<String> results=new ArrayList<>();
         for(int i=0;i<this.row;i++){
             for(int j=0;j<this.column;j++){
                 if(isHave(getID(i,j))>=0){

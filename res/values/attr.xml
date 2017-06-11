@@ -8,6 +8,7 @@
         <attr name="overview_checked" format="color" />
         <attr name="overview_sold" format="color" />
         <attr name="txt_color" format="color"/>
+
     </declare-styleable>
 
 </resources>

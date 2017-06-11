@@ -1,5 +1,4 @@
 package com.example.x550v.five;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -88,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
                             boolean success = status == 1;
                             if (success) {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                String cookie = response.getString("Cookie");
-                                editor.putString("Cookie", cookie);
+                                editor.putString("Cookie", response.getString("Cookie"));
                                 editor.putBoolean("login", true);
                                 editor.apply();
                                 Intent intent = new Intent(MainActivity.this, MainPage.class);
@@ -102,14 +100,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }, new Response.ErrorListener() {
-                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("response error", error.toString());
-                }
-            });
-        String cookie = sharedPreferences.getString("Cookie", "");
-//        if (!cookie.equals(""))
-//            request.setSendCookie(cookie);
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("response error", error.toString());
+            }
+        });
         requestQueue.add(request);
     }
 
@@ -119,17 +114,4 @@ public class MainActivity extends AppCompatActivity {
         login = (Button) findViewById(R.id.login);
         signIn =  (Button) findViewById(R.id.signin);
     }
-
-    private View.OnClickListener clickLogin = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
-    private View.OnClickListener clickRegister = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
 }

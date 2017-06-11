@@ -1,10 +1,11 @@
 package com.example.x550v.five;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -34,12 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import retrofit2.Call;
-import retrofit2.Retrofit;
 
-/**
- * Created by X550V on 2017/6/6.
- */
 
 public class Controller extends AsyncTask<String, Integer, JSONObject> {
 
@@ -84,6 +80,20 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         method = m;
     }
 
+    public static void sendRequest(Context context, int method, String url, Map<String, String> params,
+                                   Response.Listener<JSONObject> listener) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        PostRequest request = new PostRequest(method, url, params, listener,
+                new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("response error", error.toString());
+                }
+        });
+        requestQueue.add(request);
+    }
+
+
     @Override
     protected JSONObject doInBackground(String... params) {
         JsonRequest<JSONObject> jsonRequest = new JsonObjectRequest(method, url, json,
@@ -108,13 +118,14 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
-        // TODO: 2017/6/7  
+        // TODO: 2017/6/7
     }
 
     @Override
     protected void onPostExecute(JSONObject result) {
         // TODO: 2017/6/7
     }
+
 
     public  static  String MD5(String src) {
         String res = "";
@@ -131,7 +142,9 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
     }
 
     public static String getCurTime() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);//设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
         return df.format(new Date());
     }
+
+
 }

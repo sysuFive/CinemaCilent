@@ -1,12 +1,15 @@
 package com.example.x550v.five;
+/**
+ * Created by lenovo on 2017/6/9.
+ */
+
+
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-/**
- * Created by X550V on 2017/6/9.
- */
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 public class FilmCard {
     String name, type, actors, rate;
@@ -16,8 +19,6 @@ public class FilmCard {
         type = t;
         actors = a;
         rate = r;
-        if (rate.length() > 3)
-            rate = rate.substring(0, 3);
         img = id;
     }
 

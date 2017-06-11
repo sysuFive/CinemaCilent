@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/space2x"
+    android:padding="@dimen/space2x"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,6 +22,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                android:id="@+id/detail_rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srb_drawBorderEnabled="false"
+                app:srb_fillColor="@color/colorAccent"
+                app:srb_isIndicator="true"
+                app:srb_starBackgroundColor="@android:color/darker_gray"
+                app:srb_starSize="25dp"
+                app:srb_starsSeparation="@dimen/four_dp"/>
+
             <TextView
                 android:id="@+id/detail_rating_info_text"
                 android:layout_width="wrap_content"
@@ -27,11 +40,12 @@
                 android:text="7.7"
                 android:layout_marginLeft="@dimen/space2x"/>
         </LinearLayout>
+
         <TextView
             android:id="@+id/detail_release_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上映时间 ..."/>
+            android:text="上映时间 ..." />
 
 
         <TextView
@@ -57,6 +71,20 @@
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/text_size_18sp"
             tools:text="爱情，动作"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space2x"
+            android:text="导演"/>
+
+        <TextView
+            android:id="@+id/detail_director_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="@dimen/text_size_18sp"
+            tools:text="xxx, xxx"/>
 
         <TextView
             android:layout_width="wrap_content"

@@ -27,6 +27,7 @@ public class PayPage extends AppCompatActivity {
     public TextView remain_time, movieName, movieDate, theaterAddress, seat, price;
     public Button pay;
     int orderId = -1;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +44,27 @@ public class PayPage extends AppCompatActivity {
     }
 
     private void pay() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         String url = Controller.SERVER + Controller.PAY;
         Map<String, String> params = new HashMap<>();
         params.put("orderId", orderId + "");
-        PostRequest request = new PostRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(PayPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                       try {
-                           Toast.makeText(PayPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(PayPage.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(PayPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    Toast.makeText(PayPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        requestQueue.add(request);
+        };
+        Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params, listener);
     }
 
     private void setAttr() {
-        SharedPreferences sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         movieName.setText(sharedPreferences.getString("filmName", ""));
         movieDate.setText(sharedPreferences.getString("beginTime", ""));
         theaterAddress.setText(sharedPreferences.getString("hall", ""));
@@ -95,7 +87,7 @@ public class PayPage extends AppCompatActivity {
             String[] xy = select.split(",");
             int x = Integer.parseInt(xy[0]);
             int y = Integer.parseInt(xy[1]);
-            seats += x + "排" + y + "座\n";
+            seats += x + "排" + y + "列\n";
         }
         seat.setText(seats);
     }
@@ -108,5 +100,6 @@ public class PayPage extends AppCompatActivity {
         seat = (TextView) findViewById(R.id.seat);
         price = (TextView) findViewById(R.id.price);
         pay = (Button) findViewById(R.id.pay);
+        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
     }
 }
