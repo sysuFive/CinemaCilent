@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+
 public class FilmCard {
     String name, type, actors, rate;
     int img;

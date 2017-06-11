@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+
 import java.util.ArrayList;
 
 /**
@@ -48,6 +50,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         holder.actors = (TextView)view.findViewById(R.id.movieactor);
         holder.type = (TextView) view.findViewById(R.id.movieinfo);
         holder.rate = (TextView) view.findViewById(R.id.moviegrade);
+        holder.srb = (SimpleRatingBar) view.findViewById(R.id.movie_rating_bar);
         holder.container = (ConstraintLayout) view.findViewById(R.id.movie_container);
         return holder;
     }
@@ -66,9 +69,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         viewHolder.img.setImageResource(filmCards.get(i).getImg());
         viewHolder.name.setText( filmCards.get(i).getName());
         viewHolder.type.setText( filmCards.get(i).getType());
-        viewHolder.rate.setText( filmCards.get(i).getRate());
+        String rate = filmCards.get(i).getRate()+"0000000";
+        rate = rate.substring(0,3);
+        rate += "分 / 5分";
+        viewHolder.rate.setText( rate);
+
         viewHolder.actors.setText( filmCards.get(i).getActors());
         viewHolder.itemView.setTag(i);
+        viewHolder.srb.setRating(Float.parseFloat(filmCards.get(i).getRate()));
         viewHolder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,6 +99,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         TextView rate;
         TextView actors;
         ConstraintLayout container;
+        SimpleRatingBar srb;
     }
 
 }

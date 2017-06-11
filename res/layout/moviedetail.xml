@@ -71,6 +71,20 @@
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/text_size_18sp"
             tools:text="爱情，动作"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space2x"
+            android:text="导演"/>
+
+        <TextView
+            android:id="@+id/detail_director_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="@dimen/text_size_18sp"
+            tools:text="xxx, xxx"/>
 
         <TextView
             android:layout_width="wrap_content"
