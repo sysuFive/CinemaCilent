@@ -45,7 +45,7 @@ public class FilmActivity extends AppCompatActivity {
             String publishTime = bundle.getString("publishTime");
             long pt = Long.parseLong(publishTime);
             Date d = new Date(pt);
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd", Locale.CHINA);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
             publishTime = formatter.format(d);
             String lastTime = bundle.getString("lastTime");
             float lt = Float.parseFloat(lastTime);

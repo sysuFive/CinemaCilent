@@ -90,8 +90,7 @@ public class SelectSeat extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
     }
 
-    private JSONObject getSeats(ArrayList<String> selectedSeat) throws JSONException {
-        JSONObject res = new JSONObject();
+    private JSONArray getSeats(ArrayList<String> selectedSeat) throws JSONException {
         JSONArray seats = new JSONArray();
         for (int i = 0; i < selectedSeat.size(); ++i) {
             String select = selectedSeat.get(i);
@@ -101,11 +100,9 @@ public class SelectSeat extends AppCompatActivity {
             JSONObject json = new JSONObject();
             json.put("x", x);
             json.put("y", y);
-            json.put("valid", allSeat[x][y]);
             seats.put(json);
         }
-        res.put("sit", seats);
-        return res;
+        return seats;
     }
 
     private void makeReservation() throws JSONException {
@@ -113,13 +110,10 @@ public class SelectSeat extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
         SessionId = sharedPreferences.getInt("SessionId", -1);
-        int userId = sharedPreferences.getInt("userId", -1);
         float price = sharedPreferences.getInt("price", 0);
         final float total = price * selectedSeat.size();
         params.put("filmSessionId", "" + SessionId);
         params.put("price", "" + total);
-        params.put("userId", "" + userId);
-        params.put("time", Controller.getCurTime());
         params.put("orderSit", getSeats(selectedSeat).toString());
         String url = Controller.SERVER + Controller.MAKE;
         PostRequest request = new PostRequest(Request.Method.POST, url, params,

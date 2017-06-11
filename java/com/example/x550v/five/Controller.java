@@ -84,31 +84,6 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         method = m;
     }
 
-    public void sendRequest()  {
-//        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//        final Map<String, String> params = new HashMap<>();
-//        String url = Controller.SERVER + Controller.REGISTER;
-//        PostRequest request = new PostRequest(Request.Method.POST, url, params,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(final JSONObject response) {
-//                        if (response == null) {
-//                            Toast.makeText(.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Toast.makeText(.this, error.toString(), Toast.LENGTH_SHORT).show();
-//                Log.e("response error", error.toString());
-//            }
-//        });
-//        requestQueue.add(request);
-    }
-
-
     @Override
     protected JSONObject doInBackground(String... params) {
         JsonRequest<JSONObject> jsonRequest = new JsonObjectRequest(method, url, json,
@@ -141,7 +116,6 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         // TODO: 2017/6/7
     }
 
-
     public  static  String MD5(String src) {
         String res = "";
         try {
@@ -157,7 +131,7 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
     }
 
     public static String getCurTime() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);//设置日期格式
         return df.format(new Date());
     }
 }

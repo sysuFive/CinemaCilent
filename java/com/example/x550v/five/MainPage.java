@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -59,6 +62,7 @@ public class MainPage extends AppCompatActivity {
     int cityCode = 0;
     int page = 0;
     ArrayList<HashMap<String, Object>> filmData, cinemaData;
+    Map<Integer, String[]> filmUrls, cinemaUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +129,60 @@ public class MainPage extends AppCompatActivity {
 //        });
     }
 
+    private void getFilmsImgUrl(final Integer FilmId) {
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        final Map<String, String> params = new HashMap<>();
+        String url = Controller.SERVER + Controller.FILMPIC + FilmId;
+        final PostRequest request = new PostRequest(Request.Method.GET, url, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(final JSONObject response) {
+                        if (response == null) {
+                            Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        try {
+                            int status = response.getInt("status");
+                            boolean success = status == 1;
+                            if (success) {
+                                String[] paths = (String[])response.get("message");
+                                filmUrls.put(FilmId, paths);
+                            } else {
+                                Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainPage.this, error.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("response error", error.toString());
+            }
+        });
+        String cookie = sharedPreferences.getString("Cookie", "");
+//        if (!cookie.equals(""))
+//            request.setSendCookie(cookie);
+        requestQueue.add(request);
+    }
+
+    private void getFilmsImg(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        ImageRequest request = new ImageRequest(url, new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap bitmap) {
+
+            }
+        }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        requestQueue.add(request);
+    }
+
     public void findViews() {
         position = (TextView) findViewById(R.id.currentpos);
         clickmovie = (Button) findViewById(R.id.clickmovie);
@@ -139,7 +197,8 @@ public class MainPage extends AppCompatActivity {
         cinemaData = new ArrayList<>();
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         MODE = sharedPreferences.getInt("mode", FILM);
-
+        filmUrls = new HashMap<>();
+        cinemaUrls = new HashMap<>();
     }
 
     private void getFilms() {
@@ -169,7 +228,9 @@ public class MainPage extends AppCompatActivity {
                                     String actors = one.getString("actor");
                                     String rate = one.getString("score");
                                     String type = one.getString("category");
-                                    tmp.put("filmId", one.get("id"));
+                                    int filmId = one.getInt("id");
+                                    getFilmsImgUrl(filmId);
+                                    tmp.put("filmId", filmId);
                                     tmp.put("filmName", name);
                                     tmp.put("filmActor", actors);
                                     tmp.put("filmRate", rate);

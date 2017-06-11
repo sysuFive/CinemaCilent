@@ -163,7 +163,7 @@ public class TheaterActivity extends AppCompatActivity {
 
     private String Long2String(Long t) {
         Date bd = new Date(t);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.CHINA);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.CHINA);
         return formatter.format(bd);
     }
 

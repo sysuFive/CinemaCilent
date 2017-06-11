@@ -95,7 +95,7 @@ public class PayPage extends AppCompatActivity {
             String[] xy = select.split(",");
             int x = Integer.parseInt(xy[0]);
             int y = Integer.parseInt(xy[1]);
-            seats += x + "排" + y + "列\n";
+            seats += x + "排" + y + "座\n";
         }
         seat.setText(seats);
     }

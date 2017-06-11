@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void Login() {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("username", username.getText().toString());
         params.put("password", Controller.MD5(password.getText().toString()));
         PostRequest request = new PostRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, params,
@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
                             boolean success = status == 1;
                             if (success) {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("cookie", response.getString("Cookie"));
+                                String cookie = response.getString("Cookie");
+                                editor.putString("Cookie", cookie);
                                 editor.putBoolean("login", true);
                                 editor.apply();
                                 Intent intent = new Intent(MainActivity.this, MainPage.class);
