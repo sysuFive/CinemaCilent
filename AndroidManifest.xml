@@ -19,12 +19,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".Testing">
-
-        </activity>
-        <activity android:name=".MainPage" >
-
-        </activity>
+        <activity android:name=".Testing"></activity>
+        <activity android:name=".MainPage"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,20 +28,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignIn"/>
-        <activity android:name=".FilmActivity">
-
-        </activity>
-        <activity android:name=".UserInfo"/>
-        <activity android:name=".SelectSeat">
-
-        </activity>
-        <activity android:name=".TheaterActivity">
-
-        </activity>
-        <activity android:name=".PayPage">
-
-        </activity>
+        <activity android:name=".SignIn" />
+        <activity android:name=".FilmActivity"></activity>
+        <activity android:name=".UserInfo" />
+        <activity android:name=".SelectSeat"></activity>
+        <activity android:name=".TheaterActivity"></activity>
+        <activity android:name=".PayPage"></activity>
+        <activity android:name=".FilmRemark"></activity>
     </application>
 
 </manifest>

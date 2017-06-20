@@ -110,7 +110,7 @@ public class SelectSeat extends AppCompatActivity {
                     int status = response.getInt("status");
                     boolean success = status == 1;
                     if (success) {
-                        int orderId = response.getInt("orderId");
+                        int orderId = response.getInt("message");
                         Intent t = new Intent(SelectSeat.this, PayPage.class);
                         t.putExtra("selectedSeat", selectedSeat);
                         t.putExtra("price", total);
@@ -124,7 +124,8 @@ public class SelectSeat extends AppCompatActivity {
                 }
             }
         };
-        Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params, listener);
+        String cookie = sharedPreferences.getString("Cookie", "");
+        Controller.sendRequestWithCookie(getApplicationContext(), Request.Method.POST, url, params, listener, cookie);
     }
 
     private void setSeatTable() {

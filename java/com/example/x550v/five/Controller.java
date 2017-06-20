@@ -82,16 +82,23 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
 
     public static void sendRequest(Context context, int method, String url, Map<String, String> params,
                                    Response.Listener<JSONObject> listener) {
+        sendRequestWithCookie(context, method, url, params, listener, "");
+    }
+
+    public static void sendRequestWithCookie(Context context, int method, String url, Map<String, String> params,
+                                   Response.Listener<JSONObject> listener, String cookie) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         PostRequest request = new PostRequest(method, url, params, listener,
                 new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("response error", error.toString());
-                }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("response error", error.toString());
+                    }
+                });
+        request.setSendCookie(cookie);
         requestQueue.add(request);
     }
+
 
 
     @Override

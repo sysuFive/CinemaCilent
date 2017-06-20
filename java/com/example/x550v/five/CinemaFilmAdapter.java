@@ -65,11 +65,12 @@ public class CinemaFilmAdapter extends RecyclerView.Adapter<CinemaFilmAdapter.Vi
     public int getItemCount() {
         return  filmCards.size();
     }
+
     public static class ViewHolder  extends RecyclerView.ViewHolder{
         public ViewHolder(View itemView) {
             super(itemView);
         }
-        ImageView img;
+        public ImageView img;
     }
 
 }

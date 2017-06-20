@@ -378,9 +378,9 @@ public class MainPage extends AppCompatActivity {
     private void getCinemas() {
         final Map<String, String> params = new HashMap<>();
         // TODO: 2017/6/11 delete
-        cityCode = 0;
-        longitude = 0;
-        latitude = 0;
+//        cityCode = 0;
+//        longitude = 0;
+//        latitude = 0;
         page = 0;
         params.put("citycode", "" + cityCode);
         params.put("longtitude", "" + longitude);
@@ -412,7 +412,7 @@ public class MainPage extends AppCompatActivity {
                             tmp.put("CinemaId", one.get("id"));
                             cinemaData.add(tmp);
                             // TODO: 2017/6/10  get img
-                            int rid = R.drawable.test;
+                            int rid = R.drawable.theater;
                             ++page;
                             theatercards.add(new CinemaCard(name, address, phone, rid));
                         }
