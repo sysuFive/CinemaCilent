@@ -1,10 +1,11 @@
 package com.example.lenovo.five_version1;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -78,6 +79,26 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         json = jn;
         method = m;
     }
+
+    public static void sendRequest(Context context, int method, String url, Map<String, String> params,
+                                   Response.Listener<JSONObject> listener) {
+        sendRequestWithCookie(context, method, url, params, listener, "");
+    }
+
+    public static void sendRequestWithCookie(Context context, int method, String url, Map<String, String> params,
+                                             Response.Listener<JSONObject> listener, String cookie) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        PostRequest request = new PostRequest(method, url, params, listener,
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("response error", error.toString());
+                    }
+                });
+        request.setSendCookie(cookie);
+        requestQueue.add(request);
+    }
+
 
 
     @Override

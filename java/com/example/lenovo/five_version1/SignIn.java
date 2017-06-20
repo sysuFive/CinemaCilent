@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -48,12 +50,21 @@ public class SignIn extends AppCompatActivity {
 
     public EditText username, password, repassword, email;
     public Button signin;
+    public Button bt_username_clear, bt_email_clear, bt_pwd_clear, bt_repwd_clear;
+    public TextWatcher username_watcher, password_watcher, repassword_watcher, email_watcher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
         findViews();
+        initWatcher();
+        username.addTextChangedListener(username_watcher);
+        password.addTextChangedListener(password_watcher);
+        repassword.addTextChangedListener(repassword_watcher);
+        email.addTextChangedListener(email_watcher);
+
+
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,12 +83,83 @@ public class SignIn extends AppCompatActivity {
                 }
             }
         });
+
+        bt_username_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                username.setText("");
+            }
+        });
+        bt_pwd_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                password.setText("");
+            }
+        });
+        bt_repwd_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                repassword.setText("");
+            }
+        });
+        bt_email_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                email.setText("");
+            }
+        });
     }
 
     private  boolean isValidMailbox(String email) {
         return true;
     }
 
+    private void initWatcher() {
+        username_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                if(s.toString().length()>0){
+                    bt_username_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_username_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+        email_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                if(s.toString().length()>0){
+                    bt_email_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_email_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+        repassword_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                if(s.toString().length()>0){
+                    bt_repwd_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_repwd_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+        password_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                if(s.toString().length()>0){
+                    bt_pwd_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_pwd_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+    }
 
     private void signIn() {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -139,5 +221,9 @@ public class SignIn extends AppCompatActivity {
         repassword = (EditText) findViewById(R.id.signin_repassword);
         signin =  (Button) findViewById(R.id.signin_signin);
         email = (EditText) findViewById(R.id.signin_email);
+        bt_username_clear = (Button) findViewById(R.id.bt_username_clear);
+        bt_email_clear = (Button) findViewById(R.id.bt_email_clear);
+        bt_pwd_clear = (Button) findViewById(R.id.bt_pwd_clear);
+        bt_repwd_clear = (Button) findViewById(R.id.bt_repwd_clear);
     }
 }

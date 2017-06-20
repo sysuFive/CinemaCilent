@@ -30,6 +30,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpCookie;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class SelectSeat extends AppCompatActivity {
     private SeatTable seat;
     public Button pay;
@@ -71,8 +101,7 @@ public class SelectSeat extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
     }
 
-    private JSONObject getSeats(ArrayList<String> selectedSeat) throws JSONException {
-        JSONObject res = new JSONObject();
+    private JSONArray getSeats(ArrayList<String> selectedSeat) throws JSONException {
         JSONArray seats = new JSONArray();
         for (int i = 0; i < selectedSeat.size(); ++i) {
             String select = selectedSeat.get(i);
@@ -85,14 +114,11 @@ public class SelectSeat extends AppCompatActivity {
             json.put("valid", allSeat[x][y]);
             seats.put(json);
         }
-        res.put("sit", seats);
-        return res;
+        return seats;
     }
 
     private void makeReservation() throws JSONException {
         final ArrayList<String> selectedSeat = seat.getSelectedSeat();
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
         SessionId = sharedPreferences.getInt("SessionId", -1);
         int userId = sharedPreferences.getInt("userId", -1);
@@ -104,40 +130,33 @@ public class SelectSeat extends AppCompatActivity {
         params.put("time", Controller.getCurTime());
         params.put("orderSit", getSeats(selectedSeat).toString());
         String url = Controller.SERVER + Controller.MAKE;
-        PostRequest request = new PostRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(SelectSeat.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            int status = response.getInt("status");
-                            boolean success = status == 1;
-                            if (success) {
-                                int orderId = response.getInt("orderId");
-                                Intent t = new Intent(SelectSeat.this, PayPage.class);
-                                t.putExtra("selectedSeat", selectedSeat);
-                                t.putExtra("price", total);
-                                t.putExtra("orderId", orderId);
-                                startActivity(t);
-                            } else {
-                                Toast.makeText(SelectSeat.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(SelectSeat.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(SelectSeat.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    int status = response.getInt("status");
+                    boolean success = status == 1;
+                    if (success) {
+                        int orderId = response.getInt("message");
+                        Intent t = new Intent(SelectSeat.this, PayPage.class);
+                        t.putExtra("selectedSeat", selectedSeat);
+                        t.putExtra("price", total);
+                        t.putExtra("orderId", orderId);
+                        startActivity(t);
+                    } else {
+                        Toast.makeText(SelectSeat.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-//        request.setSendCookie(sharedPreferences.getString("Cookie", ""));
-        requestQueue.add(request);
+        };
+        String cookie = sharedPreferences.getString("Cookie", "");
+        Controller.sendRequestWithCookie(getApplicationContext(), Request.Method.POST, url, params, listener, cookie);
     }
 
     private void setSeatTable() {
@@ -173,46 +192,38 @@ public class SelectSeat extends AppCompatActivity {
     }
 
     private void setSeat() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
         SessionId = sharedPreferences.getInt("SessionId", -1);
         String url = Controller.SERVER + Controller.SIT + SessionId;
-        PostRequest request = new PostRequest(Request.Method.GET, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(SelectSeat.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            col = -1;
-                            row = -1;
-                            allSeat = new boolean[100][100];
-                            JSONArray seats = response.getJSONArray("sits");
-                            for (int i = 0; i < seats.length(); ++i) {
-                                JSONObject seat = seats.getJSONObject(i);
-                                int x = seat.getInt("x");
-                                int y = seat.getInt("y");
-                                if (x < 100 && y < 100)
-                                    allSeat[x][y] = seat.getBoolean("valid");
-                                if (x > col)
-                                    col = x;
-                                if (y > row)
-                                    row = y;
-                            }
-                            setSeatTable();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(SelectSeat.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(SelectSeat.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    col = -1;
+                    row = -1;
+                    allSeat = new boolean[100][100];
+                    JSONArray seats = response.getJSONArray("sits");
+                    for (int i = 0; i < seats.length(); ++i) {
+                        JSONObject seat = seats.getJSONObject(i);
+                        int x = seat.getInt("x");
+                        int y = seat.getInt("y");
+                        if (x < 100 && y < 100)
+                            allSeat[x][y] = seat.getBoolean("valid");
+                        if (x > col)
+                            col = x;
+                        if (y > row)
+                            row = y;
+                    }
+                    setSeatTable();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        requestQueue.add(request);
+        };
+        Controller.sendRequest(getApplicationContext(), Request.Method.GET, url, params, listener);
     }
 }

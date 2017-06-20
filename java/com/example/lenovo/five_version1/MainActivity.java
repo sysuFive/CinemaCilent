@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,8 +32,38 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public EditText username, password;
-    public Button login, signIn;
+    public Button login, signIn, bt_username_clear, bt_pwd_clear;
     SharedPreferences sharedPreferences;
+    private TextWatcher username_watcher;
+    private TextWatcher password_watcher;
+
+    private void initWatcher() {
+        username_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                password.setText("");
+                if(s.toString().length()>0){
+                    bt_username_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_username_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+
+        password_watcher = new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {}
+            public void afterTextChanged(Editable s) {
+                if(s.toString().length()>0){
+                    bt_pwd_clear.setVisibility(View.VISIBLE);
+                }else{
+                    bt_pwd_clear.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         findViews();
+        initWatcher();
+        username.addTextChangedListener(username_watcher);
+        password.addTextChangedListener(password_watcher);
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +101,19 @@ public class MainActivity extends AppCompatActivity {
                 Intent t = new Intent(MainActivity.this, SignIn.class);
                 startActivity(t);
 
+            }
+        });
+
+        bt_username_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                username.setText("");
+            }
+        });
+        bt_pwd_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                password.setText("");
             }
         });
     }
@@ -116,18 +165,9 @@ public class MainActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.password);
         login = (Button) findViewById(R.id.login);
         signIn =  (Button) findViewById(R.id.signin);
+        bt_username_clear = (Button) findViewById(R.id.bt_username_clear);
+        bt_pwd_clear = (Button) findViewById(R.id.bt_pwd_clear);
     }
 
-    private View.OnClickListener clickLogin = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
 
-        }
-    };
-    private View.OnClickListener clickRegister = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
 }

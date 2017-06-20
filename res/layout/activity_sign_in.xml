@@ -1,103 +1,181 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical">
-
-    <TableLayout
+    android:background="@drawable/logbackground"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true" >
+    <RelativeLayout
+        android:layout_weight="3"
+        android:id="@+id/logo"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TableRow>
-            <TextView
-                android:textSize="18sp"
-                android:text="@string/username_"
-                android:gravity="right" />
+        android:layout_height="0dp">
+        <com.flaviofaria.kenburnsview.KenBurnsView
+            android:id="@+id/backdrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:src="@drawable/movie_projector"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/login_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/logo"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_weight="5"
+        >
+
+        <FrameLayout
+            android:layout_marginTop="30dp"
+            android:id="@+id/username_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
             <EditText
                 android:id="@+id/signin_username"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/usernamehint_"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                />
+                android:layout_height="45dp"
+                android:layout_marginTop="5dp"
+                android:maxLength="20"
+                android:paddingLeft="55dp"
+                android:paddingRight="60dp"></EditText>
 
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:textSize="18sp"
-                android:text="@string/email"
-                android:gravity="right" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="22dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/account"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/bt_username_clear"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/clear"
+                android:visibility="invisible" />
+        </FrameLayout>
+        <FrameLayout
+            android:layout_below="@id/username_layout"
+            android:id="@+id/email_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
             <EditText
                 android:id="@+id/signin_email"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/emailhint"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                />
+                android:layout_height="45dp"
+                android:layout_marginTop="5dp"
+                android:maxLength="20"
+                android:paddingLeft="55dp"
+                android:paddingRight="60dp"></EditText>
 
-        </TableRow>
-        <TableRow
-            android:layout_marginTop="10dp"
-            >
-            <TextView
-                android:gravity="right"
-                android:textSize="18sp"
-                android:text="@string/password_"
-                android:layout_marginLeft="20dp" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="22dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/email"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/bt_email_clear"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/clear"
+                android:visibility="invisible" />
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/usercode_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/email_layout"
+            android:layout_marginTop="6dp"
+            android:gravity="center">
 
             <EditText
                 android:id="@+id/signin_password"
-                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
                 android:inputType="textPassword"
-                android:hint="@string/passwordhint_"
-                android:textSize="18sp"
+                android:maxLength="20"
+                android:paddingLeft="55dp"
+                android:paddingRight="60dp"></EditText>
 
-                />
-        </TableRow>
-        <TableRow
-            android:layout_marginTop="10dp"
-            >
-            <TextView
-                android:gravity="right"
-                android:textSize="18sp"
-                android:text="确认密码："
-                android:layout_marginLeft="20dp" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="22dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/lock" />
+
+            <Button
+                android:id="@+id/bt_pwd_clear"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="33dp"
+                android:background="@drawable/clear"
+                android:visibility="invisible" />
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/userrecode_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/usercode_layout"
+            android:layout_marginTop="6dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="22dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/confirm" />
+
+            <Button
+                android:id="@+id/bt_repwd_clear"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="33dp"
+                android:background="@drawable/clear"
+                android:visibility="invisible" />
 
             <EditText
                 android:id="@+id/signin_repassword"
-                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="45dp"
                 android:inputType="textPassword"
-                android:textSize="18sp"
-
-                />
-        </TableRow>
-    </TableLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        >
-
+                android:maxLength="20"
+                android:hint="Confirm Password"
+                android:paddingLeft="55dp"
+                android:paddingRight="60dp"></EditText>
+        </FrameLayout>
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="      注册      "
-            android:textColor="#ffffff"
-            android:id = "@+id/signin_signin"
-            android:textSize="18dp"
-            android:radius="10dp"
+            android:id="@+id/signin_signin"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/userrecode_layout"
+            android:layout_marginTop="25dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="注册"
+            android:textColor="@android:color/white" />
 
-            />
 
+    </RelativeLayout>
 
-    </LinearLayout>
 </LinearLayout>

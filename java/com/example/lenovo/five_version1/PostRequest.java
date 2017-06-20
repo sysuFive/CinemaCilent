@@ -43,21 +43,22 @@ public class PostRequest extends Request<JSONObject> {
             String je = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
             JSONObject jsonObject = new JSONObject(je);
             sendHeader = response.headers;
-//            if (sendHeader.containsKey("Set-Cookie")) {
-//                cookieFromResponse = sendHeader.get("Set-Cookie");
-//                jsonObject.put("Cookie",cookieFromResponse);
-//            }
-            header = response.headers.toString();
-            //使用正则表达式从reponse的头中提取cookie内容的子串
-            Pattern pattern = Pattern.compile("Set-Cookie.*?;");
-            Matcher m = pattern.matcher(header);
-            if(m.find()){
-                cookieFromResponse = m.group();
-                //去掉cookie末尾的分号
-                cookieFromResponse = cookieFromResponse.substring(11,cookieFromResponse.length()-1);
-                //将cookie字符串添加到jsonObject中，该jsonObject会被deliverResponse递交，调用请求时则能在onResponse中得到
+            if (sendHeader.containsKey("Set-Cookie")) {
+                cookieFromResponse = sendHeader.get("Set-Cookie");
                 jsonObject.put("Cookie",cookieFromResponse);
             }
+//            header = response.headers.toString();
+//            //使用正则表达式从response的头中提取cookie内容的子串
+//            Pattern pattern = Pattern.compile("Set-Cookie.*?;");
+//            Matcher m = pattern.matcher(header);
+//            if(m.find()){
+//                cookieFromResponse = m.group();
+//                //去掉cookie末尾的分号
+//                cookieFromResponse = cookieFromResponse.substring(11,cookieFromResponse.length()-1);
+//                cookieFromResponse = cookieFromResponse.substring(cookieFromResponse.indexOf("=")+1);
+//                //将cookie字符串添加到jsonObject中，该jsonObject会被deliverResponse递交，调用请求时则能在onResponse中得到
+//                jsonObject.put("Cookie",cookieFromResponse);
+//            }
             return Response.success(jsonObject,
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException var3) {

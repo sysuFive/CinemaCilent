@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Movie</string>
+    <string name="app_name">五魁Show</string>
     <string name="username_">用户名： </string>
     <string name="usernamehint_">请输入用户名          </string>
     <string name="password_"> 密码： </string>
@@ -9,4 +9,5 @@
     <string name="signin">注册</string>
     <string name="email">邮箱：</string>
     <string name="emailhint">请输入邮箱</string>
+    <string name="title_activity_start">StartActivity</string>
 </resources>

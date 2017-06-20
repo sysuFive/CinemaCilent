@@ -54,6 +54,60 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabItem;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.view.ViewGroup;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.Volley;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class MainPage extends AppCompatActivity {
     private String bestProvider = LocationManager.NETWORK_PROVIDER;
     private LocationManager locationManager = null;
@@ -113,7 +167,7 @@ public class MainPage extends AppCompatActivity {
         setlistener();
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-      //  System.out.println(df.format(new Date()));// new Date()为获取当前系统时间
+        //  System.out.println(df.format(new Date()));// new Date()为获取当前系统时间
         Toast.makeText(MainPage.this,df.format(new Date()),Toast.LENGTH_LONG);
         Log.e("tm",df.format(new Date())+" " );
 
@@ -226,6 +280,8 @@ public class MainPage extends AppCompatActivity {
                 Map<String, Object> one  = cinemaData.get(position);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("CinemaId", (int)one.get("CinemaId"));
+                editor.putString("CinemaName", one.get("name").toString());
+                editor.putString("location", one.get("location").toString());
                 editor.apply();
                 startActivity(intent);
             }
@@ -249,40 +305,32 @@ public class MainPage extends AppCompatActivity {
 
     private void getCity() {
         getLatLon();
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         String url = urlHead + latitude + "," + longitude + urlEnd;
         Map<String, String> params = new HashMap<>();
-        PostRequest request = new PostRequest(Request.Method.GET, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            JSONObject results = (JSONObject) response.get("result");
-                            if (results == null) {
-                                Log.e("get city error", "null");
-                                return;
-                            }
-                            address = results.getString("address");
-                            city = ((JSONObject) results.get("address_component")).getString("city");
-                            position.setText(city);
-                            String code = ((JSONObject) results.get("ad_info")).getString("adcode");
-                            cityCode = Integer.parseInt(code);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainPage.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    JSONObject results = (JSONObject) response.get("result");
+                    if (results == null) {
+                        Log.e("get city error", "null");
+                        return;
+                    }
+                    address = results.getString("address");
+                    city = ((JSONObject) results.get("address_component")).getString("city");
+                    position.setText(city);
+                    String code = ((JSONObject) results.get("ad_info")).getString("adcode");
+                    cityCode = Integer.parseInt(code);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        requestQueue.add(request);
+        };
+        Controller.sendRequest(getApplicationContext(), Request.Method.GET, url, params, listener);
     }
 
     // return true if PERMISSION_GRANTED else false
@@ -329,131 +377,111 @@ public class MainPage extends AppCompatActivity {
     };
 
     private void getFilms() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
+        // TODO: 2017/6/11 delete
+        cityCode = 1;
         params.put("citycode", cityCode + "");
         String url = Controller.SERVER + Controller.FILM;
-        final PostRequest request = new PostRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            int status = response.getInt("status");
-                            boolean success = status == 1;
-                            CardAdapter ca;
-
-                            if (success) {
-                                JSONArray films = response.getJSONArray("message");
-                                for (int i = 0; i < films.length(); ++i) {
-                                    JSONObject one = (JSONObject) films.get(i);
-                                    HashMap<String, Object> tmp = new HashMap<>();
-                                    String name = one.getString("name");
-                                    String actors = one.getString("actor");
-                                    String rate = one.getString("score");
-                                    String type = one.getString("category");
-                                    tmp.put("filmId", one.get("id"));
-                                    tmp.put("filmName", name);
-                                    tmp.put("filmActor", actors);
-                                    tmp.put("filmRate", rate);
-                                    tmp.put("filmType", type);
-                                    tmp.put("publishTime", one.get("publishTime"));
-                                    tmp.put("lastTime", one.get("lastTime"));
-                                    tmp.put("director", one.get("director"));
-                                    tmp.put("lang", "language");
-                                    tmp.put("summary", one.get("summary"));
-                                    // TODO: 2017/6/8 get img
-//                                    String imgSrc = one.getString("img");
-                                    int imgRid = R.mipmap.ic_launcher;
-                                    tmp.put("img", imgRid);
-                                    filmData.add(tmp);
-                                    cards.add(new FilmCard(name, type, actors, rate, imgRid));
-                                }
-                            //    Toast.makeText(MainPage.this, cards.size()+" ", Toast.LENGTH_LONG).show();
-                                setRecyclerview();
-                            } else {
-                                Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainPage.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    int status = response.getInt("status");
+                    boolean success = status == 1;
+                    if (success) {
+                        JSONArray films = response.getJSONArray("message");
+                        for (int i = 0; i < films.length(); ++i) {
+                            JSONObject one = (JSONObject) films.get(i);
+                            HashMap<String, Object> tmp = new HashMap<>();
+                            String name = one.getString("name");
+                            String actors = one.getString("actor");
+                            String rate = one.getString("score");
+                            String type = one.getString("category");
+                            tmp.put("filmId", one.get("id"));
+                            tmp.put("filmName", name);
+                            tmp.put("filmActor", actors);
+                            tmp.put("filmRate", rate);
+                            tmp.put("filmType", type);
+                            tmp.put("publishTime", one.get("publishTime"));
+                            tmp.put("lastTime", one.get("lastTime"));
+                            tmp.put("director", one.get("director"));
+                            tmp.put("lang", "language");
+                            tmp.put("summary", one.get("summary"));
+                            // TODO: 2017/6/8 get img
+//                                    String imgSrc = one.getString("img");
+                            int imgRid = R.drawable.test;
+                            tmp.put("img", imgRid);
+                            filmData.add(tmp);
+                            cards.add(new FilmCard(name, type, actors, rate, imgRid));
+                        }
+                        setRecyclerview();
+                    } else {
+                        Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        requestQueue.add(request);
+        };
+        Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params, listener);
     }
 
     private void getCinemas() {
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         final Map<String, String> params = new HashMap<>();
-        cityCode = 0;
-        longitude = 0;
-        latitude = 0;
+        // TODO: 2017/6/11 delete
+//        cityCode = 0;
+//        longitude = 0;
+//        latitude = 0;
         page = 0;
         params.put("citycode", "" + cityCode);
         params.put("longtitude", "" + longitude);
         params.put("latitude", "" + latitude);
         params.put("page", "" + page);
         String url = Controller.SERVER + Controller.CINEMA;
-        PostRequest request = new PostRequest(Request.Method.POST, url, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        if (response == null) {
-                            Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            int status = response.getInt("status");
-                            boolean success = status == 1;
-                            CinemaAdapter ca;
-
-                            if (success) {
-                                JSONArray films = response.getJSONArray("message");
-                                for (int i = 0; i < films.length(); ++i) {
-                                    JSONObject one = (JSONObject) films.get(i);
-                                    HashMap<String, Object> tmp = new HashMap<>();
-                                    // TODO: 2017/6/8 get cinema info
-                                    String name = one.getString("name");
-                                    String address = one.getString("address");
-                                    String phone = one.getString("phone");
-                                    tmp.put("name", name);
-                                    tmp.put("location", address);
-                                    tmp.put("phone", phone);
-                                    tmp.put("CinemaId", one.get("id"));
-                                    cinemaData.add(tmp);
-                                    // TODO: 2017/6/10  get img
-                                    int rid = R.drawable.test;
-                                    ++page;
-                                    theatercards.add(new CinemaCard(name, address, phone, rid));
-
-                                }
-                                setTheaterRecyclerview();
-                            } else {
-                                Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainPage.this, error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e("response error", error.toString());
+            public void onResponse(final JSONObject response) {
+                if (response == null) {
+                    Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    int status = response.getInt("status");
+                    boolean success = status == 1;
+                    if (success) {
+                        JSONArray films = response.getJSONArray("message");
+                        for (int i = 0; i < films.length(); ++i) {
+                            JSONObject one = (JSONObject) films.get(i);
+                            HashMap<String, Object> tmp = new HashMap<>();
+                            // TODO: 2017/6/8 get cinema info
+                            String name = one.getString("name");
+                            String address = one.getString("address");
+                            String phone = one.getString("phone");
+                            tmp.put("name", name);
+                            tmp.put("location", address);
+                            tmp.put("phone", phone);
+                            tmp.put("CinemaId", one.get("id"));
+                            cinemaData.add(tmp);
+                            // TODO: 2017/6/10  get img
+                            int rid = R.drawable.theater;
+                            ++page;
+                            theatercards.add(new CinemaCard(name, address, phone, rid));
+                        }
+                        setTheaterRecyclerview();
+                    } else {
+                        Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        requestQueue.add(request);
+        };
+        Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params,listener);
     }
 
 }
