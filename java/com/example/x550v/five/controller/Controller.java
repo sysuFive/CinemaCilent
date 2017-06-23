@@ -1,18 +1,7 @@
-package com.example.x550v.five;
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.Service;
+package com.example.x550v.five.controller;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,67 +11,93 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 
 
-public class Controller extends AsyncTask<String, Integer, JSONObject> {
+public class Controller {
 
-    public static String SERVER = "http://172.18.69.88:8080";
+    public static String SERVER = "";
 
     public static String LOGIN =  "/login";
     public static String REGISTER = "/register";
+    public static String ID2NAME = "/user/findUser?userId=";
+    public static String FILMREMARKSELF = "/filmRemark/getMyFilmRemark";
+    public static String CINEMAREMARKSELF = "/cinemaRemark/getMyCinemaRemark";
+    public static String FILMREMARK = "/filmRemark/post";
+    public static String WALLET = "/queryWallet";
 
     public static String CINEMA = "/cinema";
     public static String CINEMAPIC = "/cinemaPic/cover/";
 
     public static String CINEMAREMARK = "/cinemaRemark/post";
     public static String CINEMAREMARKBYID = "/cinemaRemark/getByCinemaId/";
-    public static String CINEMAREMARKSELF = "/cinemaRemark/getMyCinemaRemark";
 
     public static String FILM = "/film";
     public static String FILMBYID = "/filmByCinemaId";
     public static String FILMPIC = "/filmPic/cover/";
     public static String FILMSTILL = "/filmPic/still/";
-
-    public static String FILMREMARK = "/filmRemark/post";
     public static String FILMREMARKBYID = "/filmRemark/getByFilmId/";
-    public static String FILMREMARKSELF = "/filmRemark/getMyFilmRemark";
 
     public static String FILMSESSION = "/filmsession";
+    
     public static String SIT = "/sit/";
+
     public static String MAKE = "/reservation/make";
+    public static String MYORDER = "/reservation/getMyOrder";
+
     public static String PAY = "/sysupay";
-    public static String WALLET = "/queryWallet";
 
-    public static JSONObject response = null;
+    public static String SEARCH = "/search?text=";
 
-    private RequestQueue requestQueue;
-    private String url;
-    private JSONObject json;
-    private int method;
+    public Controller() {}
 
-    public Controller(RequestQueue r, String u, JSONObject jn, int m) {
-        requestQueue = r;
-        url = u;
-        json = jn;
-        method = m;
+    public static void IPFile() {
+        File dir = new File(android.os.Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/FiveShow");
+        File ip = new File(dir, "server.txt");
+        if (ip.exists()) {
+            try {
+                FileReader inputStream = new FileReader(ip);
+                BufferedReader reader = new BufferedReader(inputStream);
+                String ipAddress = reader.readLine();
+                Controller.SERVER = "http://" + ipAddress;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                dir.mkdir();
+                ip.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void sendRequest(Context context, int method, String url, Map<String, String> params,
                                    Response.Listener<JSONObject> listener) {
         sendRequestWithCookie(context, method, url, params, listener, "");
+    }
+
+    public static void sendRequestWithGET(Context context, String url,
+                                          Response.Listener<JSONObject> listener) {
+        sendRequest(context, Request.Method.GET, url, new HashMap<String, String>(), listener);
     }
 
     public static void sendRequestWithCookie(Context context, int method, String url, Map<String, String> params,
@@ -99,40 +114,12 @@ public class Controller extends AsyncTask<String, Integer, JSONObject> {
         requestQueue.add(request);
     }
 
-
-
-    @Override
-    protected JSONObject doInBackground(String... params) {
-        JsonRequest<JSONObject> jsonRequest = new JsonObjectRequest(method, url, json,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Controller.response = response;
-                        Log.i("do in background", response.toString());
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("response error", error.getMessage());
-            }
-        });
-        requestQueue.add(jsonRequest);
-        requestQueue.start();
-        while (response == null)
-            publishProgress();
-        return response;
+    public static String convertTime(String src) {
+        long pt = Long.parseLong(src);
+        Date d = new Date(pt);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        return formatter.format(d);
     }
-
-    @Override
-    protected void onProgressUpdate(Integer... progress) {
-        // TODO: 2017/6/7
-    }
-
-    @Override
-    protected void onPostExecute(JSONObject result) {
-        // TODO: 2017/6/7
-    }
-
 
     public  static  String MD5(String src) {
         String res = "";

@@ -1,9 +1,10 @@
-package com.example.x550v.five;
-import android.app.Dialog;
-import android.content.DialogInterface;
+package com.example.x550v.five.view.activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AlertDialog;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,9 +18,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.x550v.five.R;
+import com.example.x550v.five.controller.Controller;
+import com.example.x550v.five.controller.PostRequest;
+import com.example.x550v.five.view.service.CityService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,14 +35,30 @@ public class MainActivity extends AppCompatActivity {
     public EditText username, password;
     public Button login, signIn;
     SharedPreferences sharedPreferences;
-
+    private CityService cityService;
+    ServiceConnection conn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Controller.IPFile();
+        cityService = new CityService(MainActivity.this);
+        conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                cityService = ((CityService.MyBinder)service).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                cityService = null;
+            }
+        };
+        Intent ser_intent = new Intent(MainActivity.this, CityService.class);
+        bindService(ser_intent,conn, Context.BIND_AUTO_CREATE);
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         boolean isLogin = sharedPreferences.getBoolean("login", false);
         if (isLogin) {
-            Intent intent = new Intent(MainActivity.this, MainPage.class);
+            Intent intent = new Intent(MainActivity.this, UserInfo.class);
             startActivity(intent);
         }
         setContentView(R.layout.activity_main);

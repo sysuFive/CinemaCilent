@@ -1,4 +1,4 @@
-package com.example.x550v.five;
+package com.example.x550v.five.model;
 
 /**
  * Created by X550V on 2017/6/10.
@@ -6,7 +6,7 @@ package com.example.x550v.five;
 
 public class CinemaFilm {
     int filmId, rid;
-    CinemaFilm(int filmId, int rid) {
+    public CinemaFilm(int filmId, int rid) {
         this.filmId = filmId;
         this.rid = rid;
     }

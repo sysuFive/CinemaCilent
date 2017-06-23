@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -19,22 +22,28 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".Testing"></activity>
-        <activity android:name=".MainPage"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.activity.Testing" />
+        <activity android:name=".view.activity.MainPage" />
+        <activity android:name=".view.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignIn" />
-        <activity android:name=".FilmActivity"></activity>
-        <activity android:name=".UserInfo" />
-        <activity android:name=".SelectSeat"></activity>
-        <activity android:name=".TheaterActivity"></activity>
-        <activity android:name=".PayPage"></activity>
-        <activity android:name=".FilmRemark"></activity>
+        <activity android:name=".view.activity.SignIn" />
+        <activity android:name=".view.activity.FilmActivity" />
+        <activity android:name=".view.activity.UserInfo" />
+        <activity android:name=".view.activity.SelectSeat" />
+        <activity android:name=".view.activity.TheaterActivity" />
+        <activity android:name=".view.activity.PayPage" />
+        <activity android:name=".view.activity.FilmRemark" />
+        <activity android:name=".view.activity.SearchActivity" />
+
+        <service
+            android:name=".view.service.CityService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

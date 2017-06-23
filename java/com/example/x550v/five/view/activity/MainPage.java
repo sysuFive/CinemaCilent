@@ -1,32 +1,22 @@
-package com.example.x550v.five;
-import android.Manifest;
+package com.example.x550v.five.view.activity;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TableLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.ViewGroup;
@@ -35,35 +25,27 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
-import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+import com.example.x550v.five.R;
+import com.example.x550v.five.controller.Controller;
+import com.example.x550v.five.model.CinemaCard;
+import com.example.x550v.five.model.FilmCard;
+import com.example.x550v.five.view.adapter.FilmAdapter;
+import com.example.x550v.five.view.adapter.CinemaAdapter;
+import com.example.x550v.five.view.service.CityService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class MainPage extends AppCompatActivity {
-    private String bestProvider = LocationManager.NETWORK_PROVIDER;
-    private LocationManager locationManager = null;
-    private Location curLocation = null;
-    double latitude = -1;
-    double longitude = -1;
-    String urlHead = "http://apis.map.qq.com/ws/geocoder/v1/?location=";
-    String urlEnd = "&key=34GBZ-4NOCO-FUHWJ-SPXD5-AZHGZ-TYFYN&get_poi=0";
-    RequestQueue requestQueue = null;
-    String address = "", city = "";
-    int cityCode = 0;
     int page = 0;
 
     SharedPreferences sharedPreferences;
@@ -80,15 +62,18 @@ public class MainPage extends AppCompatActivity {
     private List<View> viewList;//view数组
     ArrayList<HashMap<String, Object>> filmData, cinemaData;
     ArrayList<FilmCard> cards;
+    FilmAdapter filmAdapter;
     ArrayList<CinemaCard> theatercards;
+    CinemaAdapter cinemaAdapter;
+    Map<Integer, String> cinemaUrls, filmUrls;
     private FloatingActionButton fab;
+    Bitmap origin;
 
-    public void findview() {
+    public void findViews() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tolocate = (Button) findViewById(R.id.tolocate);
         position = (TextView) findViewById(R.id.pos);
-        locationManager = (LocationManager) getSystemService((LOCATION_SERVICE));
         filmData = new ArrayList<>();
         cinemaData = new ArrayList<>();
         cards = new ArrayList<>();
@@ -96,7 +81,10 @@ public class MainPage extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.bringToFront();
+        cinemaUrls = new HashMap<>();
+        origin = BitmapFactory.decodeResource(getResources(), R.drawable.none);
     }
+
     public void init() {
         getFilms();
         getCinemas();
@@ -105,17 +93,12 @@ public class MainPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-        findview();
+        findViews();
         getCity();
         init();
         setViewPager();
         setlistener();
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-      //  System.out.println(df.format(new Date()));// new Date()为获取当前系统时间
-        Toast.makeText(MainPage.this,df.format(new Date()),Toast.LENGTH_LONG);
-        Log.e("tm",df.format(new Date())+" " );
-
     }
 
     public  void setlistener() {
@@ -125,7 +108,13 @@ public class MainPage extends AppCompatActivity {
                 getCity();
             }
         });
-
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainPage.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void setViewPager() {
@@ -194,13 +183,16 @@ public class MainPage extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(manager);
 
-        CardAdapter sa = new CardAdapter(MainPage.this, cards);
-        sa.setOnItemClickListener(new CardAdapter.OnItemClickListener() {
+        filmAdapter = new FilmAdapter(MainPage.this, cards);
+        filmAdapter.setOnItemClickListener(new FilmAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, FilmCard item) {
                 Intent intent = new Intent(MainPage.this, FilmActivity.class);
                 Bundle bundle = new Bundle();
                 Map<String, Object> one  = filmData.get(position);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("filmId", (int)one.get("filmId"));
+                editor.apply();
                 Set<String> keys = one.keySet();
                 for (String key : keys) {
                     bundle.putString(key, one.get(key).toString());
@@ -209,7 +201,7 @@ public class MainPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        list.setAdapter(sa);
+        list.setAdapter(filmAdapter);
     }
 
     public void setTheaterRecyclerview() {
@@ -217,8 +209,8 @@ public class MainPage extends AppCompatActivity {
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         theaterlist.setLayoutManager(manager);
 
-        CinemaAdapter sa = new CinemaAdapter(MainPage.this, theatercards);
-        sa.setOnItemClickListener(new CinemaAdapter.OnItemClickListener() {
+        cinemaAdapter = new CinemaAdapter(MainPage.this, theatercards);
+        cinemaAdapter.setOnItemClickListener(new CinemaAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, CinemaCard item) {
                 Intent intent = new Intent(MainPage.this, TheaterActivity.class);
@@ -231,101 +223,19 @@ public class MainPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        theaterlist.setAdapter(sa);
+        theaterlist.setAdapter(cinemaAdapter);
 
 
-    }
-
-    private void getLatLon() {
-        if (!checkPermission())
-            return;
-        locationManager.requestLocationUpdates(bestProvider, 0, 0, locationListener);
-        locationManager.getLastKnownLocation(bestProvider);
-        curLocation = locationManager.getLastKnownLocation(bestProvider);
-        if (curLocation != null) {
-            latitude = curLocation.getLatitude();
-            longitude = curLocation.getLongitude();
-        }
     }
 
     private void getCity() {
-        getLatLon();
-        String url = urlHead + latitude + "," + longitude + urlEnd;
-        Map<String, String> params = new HashMap<>();
-        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(final JSONObject response) {
-                if (response == null) {
-                    Toast.makeText(MainPage.this, "网络繁忙，请稍候重试！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    JSONObject results = (JSONObject) response.get("result");
-                    if (results == null) {
-                        Log.e("get city error", "null");
-                        return;
-                    }
-                    address = results.getString("address");
-                    city = ((JSONObject) results.get("address_component")).getString("city");
-                    position.setText(city);
-                    String code = ((JSONObject) results.get("ad_info")).getString("adcode");
-                    cityCode = Integer.parseInt(code);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Controller.sendRequest(getApplicationContext(), Request.Method.GET, url, params, listener);
+
+        position.setText(CityService.city);
     }
-
-    // return true if PERMISSION_GRANTED else false
-    private boolean checkPermission() {
-        return !(ActivityCompat.checkSelfPermission(MainPage.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(MainPage.this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED);
-    }
-
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (!checkPermission())
-                            return;
-                        locationManager.getLastKnownLocation(bestProvider);
-                        curLocation = locationManager.getLastKnownLocation(bestProvider);
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            try {
-                if (curLocation == null) {
-                    if (!checkPermission())
-                        return;
-                    curLocation = locationManager.getLastKnownLocation(bestProvider);
-                }
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
-        @Override
-        public void onProviderEnabled(String provider) {}
-        @Override
-        public void onProviderDisabled(String provider) {}
-    };
 
     private void getFilms() {
         final Map<String, String> params = new HashMap<>();
-        // TODO: 2017/6/11 delete
-        cityCode = 1;
-        params.put("citycode", cityCode + "");
+        params.put("citycode", "156" + CityService.cityCode);
         String url = Controller.SERVER + Controller.FILM;
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
@@ -356,9 +266,7 @@ public class MainPage extends AppCompatActivity {
                             tmp.put("director", one.get("director"));
                             tmp.put("lang", "language");
                             tmp.put("summary", one.get("summary"));
-                            // TODO: 2017/6/8 get img
-//                                    String imgSrc = one.getString("img");
-                            int imgRid = R.drawable.test;
+                            int imgRid = R.drawable.none;
                             tmp.put("img", imgRid);
                             filmData.add(tmp);
                             cards.add(new FilmCard(name, type, actors, rate, imgRid));
@@ -377,14 +285,9 @@ public class MainPage extends AppCompatActivity {
 
     private void getCinemas() {
         final Map<String, String> params = new HashMap<>();
-        // TODO: 2017/6/11 delete
-//        cityCode = 0;
-//        longitude = 0;
-//        latitude = 0;
-        page = 0;
-        params.put("citycode", "" + cityCode);
-        params.put("longtitude", "" + longitude);
-        params.put("latitude", "" + latitude);
+        params.put("citycode", "156" + CityService.cityCode);
+        params.put("longtitude", "" + CityService.longitude);
+        params.put("latitude", "" + CityService.latitude);
         params.put("page", "" + page);
         String url = Controller.SERVER + Controller.CINEMA;
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
@@ -402,7 +305,6 @@ public class MainPage extends AppCompatActivity {
                         for (int i = 0; i < films.length(); ++i) {
                             JSONObject one = (JSONObject) films.get(i);
                             HashMap<String, Object> tmp = new HashMap<>();
-                            // TODO: 2017/6/8 get cinema info
                             String name = one.getString("name");
                             String address = one.getString("address");
                             String phone = one.getString("phone");
@@ -413,10 +315,10 @@ public class MainPage extends AppCompatActivity {
                             cinemaData.add(tmp);
                             // TODO: 2017/6/10  get img
                             int rid = R.drawable.theater;
-                            ++page;
-                            theatercards.add(new CinemaCard(name, address, phone, rid));
+                            theatercards.add(new CinemaCard(name, address, phone, origin));
                         }
                         setTheaterRecyclerview();
+                        getCinemaImgUrls();
                     } else {
                         Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
                     }
@@ -429,4 +331,54 @@ public class MainPage extends AppCompatActivity {
         Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params,listener);
     }
 
+    private void getCinemaImgUrls() {
+        for (int i = 0; i < cinemaData.size(); ++i) {
+            final HashMap<String, Object> one = cinemaData.get(i);
+            final int id  = (int)one.get("CinemaId");
+            String url = Controller.SERVER + Controller.CINEMAPIC + id;
+            final int finalI = i;
+            Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        boolean success = status == 1;
+                        if (success) {
+                            JSONArray films = jsonObject.getJSONArray("message");
+                            JSONObject json = (JSONObject) films.get(0);
+                            cinemaUrls.put(finalI, json.getString("path"));
+                            setTheaterRecyclerview();
+                            if (finalI == cinemaData.size() -1)
+                                getCinemaImg();
+                        } else {
+                            Toast.makeText(MainPage.this, jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            Controller.sendRequestWithGET(MainPage.this, url, listener);
+        }
+    }
+
+    private void getCinemaImg() {
+        Set<Integer> ids = cinemaUrls.keySet();
+        for (final int i : ids) {
+            ImageRequest request = new ImageRequest(cinemaUrls.get(i), new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap bitmap) {
+                    theatercards.get(i).setBitmap(bitmap);
+                    cinemaAdapter.notifyDataSetChanged();
+                }
+            }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ALPHA_8, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("response error", volleyError.toString());
+                }
+            });
+            RequestQueue queue =  Volley.newRequestQueue(MainPage.this);
+            queue.add(request);
+        }
+    }
 }

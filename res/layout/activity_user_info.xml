@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.x550v.five.UserInfo">
+    tools:context="com.example.x550v.five.view.activity.UserInfo">
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"

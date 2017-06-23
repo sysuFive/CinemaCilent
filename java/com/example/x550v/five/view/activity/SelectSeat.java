@@ -1,30 +1,23 @@
-package com.example.x550v.five;
+package com.example.x550v.five.view.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.HttpStack;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.x550v.five.R;
+import com.example.x550v.five.controller.Controller;
+import com.example.x550v.five.model.SeatTable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -130,8 +123,10 @@ public class SelectSeat extends AppCompatActivity {
 
     private void setSeatTable() {
         seat.setData(row, col);
+        seat.setScaleX(1.5f);
+        seat.setScaleY(1.5f);
         seat.setScreenName(sharedPreferences.getString("hall", ""));
-        seat.setMaxSelected(3);
+        seat.setMaxSelected(5);
         seat.setSeatChecker(new SeatTable.SeatChecker() {
             @Override
             public boolean isValidSeat(int r, int c) {

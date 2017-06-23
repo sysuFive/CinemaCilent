@@ -1,20 +1,17 @@
-package com.example.x550v.five;
+package com.example.x550v.five.view.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+
+import com.example.x550v.five.R;
+import com.example.x550v.five.model.FilmCard;
+import com.example.x550v.five.view.adapter.FilmAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class Testing extends AppCompatActivity {
 
@@ -34,8 +31,8 @@ public class Testing extends AppCompatActivity {
             FilmCard tmp = new FilmCard("神奇女侠", "动作", "xxx", "7.8", R.drawable.test);
             items.add(tmp);
         }
-        CardAdapter sa = new CardAdapter(Testing.this, items);
-        sa.setOnItemClickListener(new CardAdapter.OnItemClickListener() {
+        FilmAdapter sa = new FilmAdapter(Testing.this, items);
+        sa.setOnItemClickListener(new FilmAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, FilmCard item) {
                 Intent t = new Intent(Testing.this, FilmActivity.class);

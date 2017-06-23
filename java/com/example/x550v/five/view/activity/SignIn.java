@@ -1,8 +1,4 @@
-package com.example.x550v.five;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.support.v7.app.AlertDialog;
+package com.example.x550v.five.view.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,36 +8,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.x550v.five.R;
+import com.example.x550v.five.controller.Controller;
+import com.example.x550v.five.controller.PostRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class SignIn extends AppCompatActivity {
 
@@ -97,26 +77,8 @@ public class SignIn extends AppCompatActivity {
                             boolean success = status == 1;
                             if (success) {
                                 Toast.makeText(SignIn.this, "注册成功，请前去邮箱激活", Toast.LENGTH_SHORT).show();
-//                                Dialog dg = new AlertDialog.Builder(SignIn.this)
-//                                        .setMessage("注册成功!")
-//                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                // TODO: 2017/6/10
-//                                            }
-//                                        })
-//                                        .setPositiveButton("前去激活", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                // TODO: 2017/6/10
-//                                                Intent intent = new Intent(Intent.ACTION_SEND);
-//                                                startActivity(intent);
-//                                            }
-//                                        })
-//                                        .create();
-//                                dg.show();
                             } else {
-                                Toast.makeText(SignIn.this, "注册失败，用户名已被使用", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignIn.this, "注册失败：" + response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

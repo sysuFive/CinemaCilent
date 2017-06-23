@@ -1,4 +1,4 @@
-package com.example.x550v.five;
+package com.example.x550v.five.view.adapter;
 
 
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.x550v.five.R;
+import com.example.x550v.five.model.FilmCard;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
  * Created by X550V on 2017/6/9.
  */
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements View.OnClickListener {
+public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.ViewHolder> implements View.OnClickListener {
     private ArrayList<FilmCard> filmCards;
     private LayoutInflater mInflater;
 
@@ -34,7 +36,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         this.onItemClickListener =  mOnItemClickListener;
     }
 
-    public CardAdapter(Context context, ArrayList<FilmCard> items) {
+    public FilmAdapter(Context context, ArrayList<FilmCard> items) {
         super();
         filmCards = items;
         mInflater = LayoutInflater.from(context);

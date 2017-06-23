@@ -1,4 +1,4 @@
-package com.example.x550v.five;
+package com.example.x550v.five.view.adapter;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.x550v.five.R;
+import com.example.x550v.five.model.CinemaCard;
 
 import java.util.ArrayList;
 
@@ -62,7 +65,7 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.ViewHolder
     @Override
     public void onBindViewHolder( final ViewHolder viewHolder, final int i) {
         final CinemaCard cinemaCard =  cinemaCards.get(i);
-        viewHolder.img.setImageResource(cinemaCard.getRid());
+        viewHolder.img.setImageBitmap(cinemaCard.getBitmap());
         viewHolder.name.setText(cinemaCard.getName());
         viewHolder.address.setText(cinemaCard.getAddress());
         viewHolder.phone.setText(cinemaCard.getPhone());

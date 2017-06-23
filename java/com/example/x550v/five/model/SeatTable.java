@@ -1,5 +1,5 @@
 // https://github.com/qifengdeqingchen/SeatTable.git
-package com.example.x550v.five;
+package com.example.x550v.five.model;
 import android.animation.Animator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
@@ -29,12 +29,15 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
+import com.example.x550v.five.R;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
  * Created by baoyunlong on 16/6/16.
  */
+
 public class SeatTable extends View {
     private final boolean DBG = false;
 

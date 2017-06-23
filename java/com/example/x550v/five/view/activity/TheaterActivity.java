@@ -1,4 +1,4 @@
-package com.example.x550v.five;
+package com.example.x550v.five.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -17,10 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
+import com.example.x550v.five.R;
+import com.example.x550v.five.controller.Controller;
+import com.example.x550v.five.model.CinemaFilm;
+import com.example.x550v.five.view.adapter.CinemaFilmAdapter;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import org.json.JSONArray;
@@ -31,11 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class TheaterActivity extends AppCompatActivity {
     private RecyclerView movieslist;
@@ -155,9 +152,6 @@ public class TheaterActivity extends AppCompatActivity {
                             // TODO: 2017/6/20 make selected img bigger
                             img.setSelected(true);
                             img.setPadding(2, 3, 2, 3);
-//                            img.setMaxHeight((int)(img.getHeight()*1.2));
-//                            img.setMaxWidth((int)(img.getWidth()*1.2));
-//                            img.setAdjustViewBounds(true);
                             setSessionList();
                         }
                     });
@@ -223,17 +217,13 @@ public class TheaterActivity extends AppCompatActivity {
                             tmp.put("price", price);
                             sessionData.add(tmp);
                         }
-                        sa = new SimpleAdapter(TheaterActivity.this, sessionData, R.layout.sessionitems,
-                                new String[]  {"beginTime","endTime", "classification", "hall", "price"},
-                                new int[] {R.id.start,R.id.end, R.id.lang, R.id.whichsess, R.id.price});
-                        sessionlist.setAdapter(sa);
                     } else {
                         Toast.makeText(TheaterActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                        sa = new SimpleAdapter(TheaterActivity.this, sessionData, R.layout.sessionitems,
-                                new String[]  {},
-                                new int[] {});
-                        sessionlist.setAdapter(sa);
                     }
+                    sa = new SimpleAdapter(TheaterActivity.this, sessionData, R.layout.sessionitems,
+                            new String[]  {"beginTime","endTime", "classification", "hall", "price"},
+                            new int[] {R.id.start,R.id.end, R.id.lang, R.id.whichsess, R.id.price});
+                    sessionlist.setAdapter(sa);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

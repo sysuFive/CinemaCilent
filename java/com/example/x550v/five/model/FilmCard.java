@@ -1,4 +1,4 @@
-package com.example.x550v.five;
+package com.example.x550v.five.model;
 /**
  * Created by lenovo on 2017/6/9.
  */
@@ -14,7 +14,7 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 public class FilmCard {
     String name, type, actors, rate;
     int img;
-    FilmCard(String n, String t, String a, String r, int id) {
+     public FilmCard(String n, String t, String a, String r, int id) {
         name = n;
         type = t;
         actors = a;
