@@ -20,11 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".view.activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".view.activity.SignIn" />
         <activity android:name=".view.activity.MainPage" />
@@ -33,12 +29,21 @@
         <activity android:name=".view.activity.SelectSeat" />
         <activity android:name=".view.activity.PayPage" />
         <activity android:name=".view.activity.FilmRemark" />
-        <activity android:name=".view.activity.StartActivity" />
+        <activity android:name=".view.activity.StartActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".view.activity.Mycomments" />
         <activity
             android:name=".view.activity.Mytickets"
             android:label="@string/title_activity_mytickets"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".view.activity.SearchActivity" />
+        <activity android:name=".view.activity.ForgetPassword" />
+        <activity android:name=".view.activity.ResetPassword"></activity>
     </application>
 
 </manifest>

@@ -49,7 +49,7 @@ public class CinemaFilmAdapter extends RecyclerView.Adapter<CinemaFilmAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.img.setImageResource(filmCards.get(position).getRid());
+        viewHolder.img.setImageBitmap(filmCards.get(position).getImg());
         viewHolder.itemView.setTag(position);
     }
 

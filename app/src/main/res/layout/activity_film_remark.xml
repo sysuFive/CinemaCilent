@@ -24,6 +24,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </ListView>
+        <Button
+            android:id="@+id/more"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eeeeee"
+            android:textSize="20sp"
+            android:text="点击加载更多..."/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +52,7 @@
             android:id="@+id/send"
             android:layout_width="70dp"
             android:layout_height="match_parent"
-            android:background="@drawable/buttonwhite"
+            android:background="@drawable/buttonblue"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:layout_marginStart="5dp"

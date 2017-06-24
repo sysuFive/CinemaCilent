@@ -2,6 +2,7 @@ package com.example.lenovo.five_version1.controller;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,6 +40,9 @@ public class Controller {
     public static String CINEMAREMARKSELF = "/cinemaRemark/getMyCinemaRemark";
     public static String FILMREMARK = "/filmRemark/post";
     public static String WALLET = "/queryWallet";
+    public static String FORGET = "/user/forgetPassword";
+    public static String CONFIRM = "/user/confirmCode";
+    public static String RESET = "/user/resetPassword";
 
     public static String CINEMA = "/cinema";
     public static String CINEMAPIC = "/cinemaPic/cover/";
@@ -47,6 +51,7 @@ public class Controller {
     public static String CINEMAREMARKBYID = "/cinemaRemark/getByCinemaId/";
 
     public static String FILM = "/film";
+    public static String FINDFILM = "/findFilm?filmId=";
     public static String FILMBYID = "/filmByCinemaId";
     public static String FILMPIC = "/filmPic/cover/";
     public static String FILMSTILL = "/filmPic/still/";
@@ -100,13 +105,14 @@ public class Controller {
         sendRequest(context, Request.Method.GET, url, new HashMap<String, String>(), listener);
     }
 
-    public static void sendRequestWithCookie(Context context, int method, String url, Map<String, String> params,
-                                   Response.Listener<JSONObject> listener, String cookie) {
+    public static void sendRequestWithCookie(final Context context, int method, String url, Map<String, String> params,
+                                             Response.Listener<JSONObject> listener, String cookie) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         PostRequest request = new PostRequest(method, url, params, listener,
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                         Log.e("response error", error.toString());
                     }
                 });

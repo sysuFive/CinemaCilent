@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="E:\workspace\Five_version1\slidelibrary\src\main\assets"/><source path="E:\workspace\Five_version1\slidelibrary\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="E:\workspace\Five_version1\slidelibrary\src\release\assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="E:\X550V\GitHub\CinemaCilent\slidelibrary\src\main\assets"/><source path="E:\X550V\GitHub\CinemaCilent\slidelibrary\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="E:\X550V\GitHub\CinemaCilent\slidelibrary\src\release\assets"/></dataSet></merger>

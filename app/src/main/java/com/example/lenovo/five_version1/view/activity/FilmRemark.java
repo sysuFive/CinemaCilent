@@ -29,7 +29,7 @@ public class FilmRemark extends AppCompatActivity {
 
     TextView filmName;
     EditText myRemark;
-    Button send;
+    Button send, more;
     ListView remarkList;
     SharedPreferences sharedPreferences;
     int filmId = 0;
@@ -45,10 +45,19 @@ public class FilmRemark extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null)
             filmName.setText(intent.getStringExtra("filmName"));
+        setListener();
+    }
+
+    private void setListener() {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendRemark();
+            }
+        });
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 getRemarks();
             }
         });
@@ -58,10 +67,13 @@ public class FilmRemark extends AppCompatActivity {
         filmName = (TextView) findViewById(R.id.filmName);
         myRemark = (EditText) findViewById(R.id.my_remark);
         send = (Button) findViewById(R.id.send);
+        more = (Button) findViewById(R.id.more);
         remarkList = (ListView) findViewById(R.id.remark_list);
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         filmId = sharedPreferences.getInt("filmId", -1);
     }
+
+
 
     private void getUserName() {
         for (int i = 0; i < remarkData.size(); ++i) {
@@ -74,7 +86,6 @@ public class FilmRemark extends AppCompatActivity {
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 1) {
-                            JSONObject info = jsonObject.getJSONObject("message");
                             remark.put("username", jsonObject.getString("message"));
                             sa.notifyDataSetChanged();
                         } else {
@@ -85,7 +96,7 @@ public class FilmRemark extends AppCompatActivity {
                     }
                 }
             };
-            Controller.sendRequest(FilmRemark.this, Request.Method.GET, url, new HashMap<String, String>(), listener);
+            Controller.sendRequestWithGET(FilmRemark.this, url, listener);
         }
     }
 
@@ -146,6 +157,7 @@ public class FilmRemark extends AppCompatActivity {
                 }
                 try {
                     Toast.makeText(FilmRemark.this, response.getString("message"), Toast.LENGTH_LONG).show();
+                    myRemark.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

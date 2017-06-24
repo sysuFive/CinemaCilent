@@ -35,12 +35,49 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public EditText username, password;
-    public Button login, signIn, bt_username_clear, bt_pwd_clear;
+    public Button login, signIn, bt_username_clear, bt_pwd_clear, forget;
     SharedPreferences sharedPreferences;
     private TextWatcher username_watcher;
     private TextWatcher password_watcher;
     private CityService cityService;
     ServiceConnection conn;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+        findViews();
+        initWatcher();
+        username.addTextChangedListener(username_watcher);
+        password.addTextChangedListener(password_watcher);
+
+        Controller.IPFile();
+        cityService = new CityService(MainActivity.this);
+        conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                cityService = ((CityService.MyBinder)service).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                cityService = null;
+            }
+        };
+        Intent ser_intent = new Intent(MainActivity.this, CityService.class);
+        bindService(ser_intent,conn, Context.BIND_AUTO_CREATE);
+
+        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
+        boolean isLogin = sharedPreferences.getBoolean("login", false);
+        if (isLogin) {
+            username.setText(sharedPreferences.getString("username", ""));
+            password.setText(sharedPreferences.getString("password", ""));
+        }
+        setListener();
+    }
+
     private void initWatcher() {
         username_watcher = new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -70,47 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-        // System.out.println("按下了back键   onBackPressed()");
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-        Controller.IPFile();
-        cityService = new CityService(MainActivity.this);
-        conn = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                cityService = ((CityService.MyBinder)service).getService();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                cityService = null;
-            }
-        };
-        Intent ser_intent = new Intent(MainActivity.this, CityService.class);
-        bindService(ser_intent,conn, Context.BIND_AUTO_CREATE);
-
-        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-
-        boolean isLogin = sharedPreferences.getBoolean("login", false);
-//        if (isLogin) {
-//            Intent intent = new Intent(MainActivity.this, MainPage.class);
-//            startActivity(intent);
-//        }
-        setContentView(R.layout.activity_main);
-
-        findViews();
-        initWatcher();
-        username.addTextChangedListener(username_watcher);
-        password.addTextChangedListener(password_watcher);
-        if (isLogin) {
-            username.setText(sharedPreferences.getString("username", "caonima"));
-            password.setText(sharedPreferences.getString("password", "caonima"));
-        }
+    private void setListener() {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,8 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(password.getText().toString())) {
                     Toast.makeText(MainActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
                 } else  {
-                    //  SEND TO SERVER
-                    //username password
                     Login();
                 }
             }
@@ -131,7 +132,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent t = new Intent(MainActivity.this, SignIn.class);
                 startActivity(t);
+            }
+        });
 
+        forget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ForgetPassword.class);
+                startActivity(intent);
             }
         });
 
@@ -151,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void Login() {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("username", username.getText().toString());
         params.put("password", Controller.MD5(password.getText().toString()));
         PostRequest request = new PostRequest(Request.Method.POST, Controller.SERVER + Controller.LOGIN, params,
@@ -200,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         signIn =  (Button) findViewById(R.id.signin);
         bt_username_clear = (Button) findViewById(R.id.bt_username_clear);
         bt_pwd_clear = (Button) findViewById(R.id.bt_pwd_clear);
+        forget = (Button) findViewById(R.id.login_error);
     }
 
 

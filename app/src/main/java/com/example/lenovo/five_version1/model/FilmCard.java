@@ -13,8 +13,8 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 public class FilmCard {
     String name, type, actors, rate;
-    int img;
-     public FilmCard(String n, String t, String a, String r, int id) {
+    Bitmap img;
+     public FilmCard(String n, String t, String a, String r, Bitmap id) {
         name = n;
         type = t;
         actors = a;
@@ -22,7 +22,7 @@ public class FilmCard {
         img = id;
     }
 
-    public int getImg() {
+    public Bitmap getImg() {
         return img;
     }
 
@@ -46,7 +46,7 @@ public class FilmCard {
         this.actors = actors;
     }
 
-    public void setImg(int img) {
+    public void setImg(Bitmap img) {
         this.img = img;
     }
 

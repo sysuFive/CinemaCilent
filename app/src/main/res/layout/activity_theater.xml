@@ -35,7 +35,8 @@
         android:id="@+id/movie_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff">
+        android:background="#ffffff"
+        android:visibility="invisible">
         <TextView
 
             android:id="@+id/moviename"

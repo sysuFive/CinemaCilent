@@ -26,9 +26,9 @@
             <com.flaviofaria.kenburnsview.KenBurnsView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="250dp"
                 android:fitsSystemWindows="true"
-                android:src="@drawable/test"
+                android:src="@drawable/none"
                 />
 
 

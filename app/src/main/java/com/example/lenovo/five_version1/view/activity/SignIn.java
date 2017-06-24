@@ -39,6 +39,10 @@ public class SignIn extends AppCompatActivity {
 
         findViews();
         initWatcher();
+        setListener();
+    }
+
+    private void setListener() {
         username.addTextChangedListener(username_watcher);
         password.addTextChangedListener(password_watcher);
         repassword.addTextChangedListener(repassword_watcher);
@@ -57,8 +61,6 @@ public class SignIn extends AppCompatActivity {
                 } else if (!isValidMailbox(email.getText().toString())) {
                     Toast.makeText(SignIn.this, "请输入正确的邮箱地址", Toast.LENGTH_SHORT).show();
                 } else {
-                    //  SEND TO SERVER
-                    //username password
                     signIn();
                 }
             }
@@ -160,24 +162,6 @@ public class SignIn extends AppCompatActivity {
                             boolean success = status == 1;
                             if (success) {
                                 Toast.makeText(SignIn.this, "注册成功，请前去邮箱激活", Toast.LENGTH_SHORT).show();
-//                                Dialog dg = new AlertDialog.Builder(SignIn.this)
-//                                        .setMessage("注册成功!")
-//                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                // TODO: 2017/6/10
-//                                            }
-//                                        })
-//                                        .setPositiveButton("前去激活", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                // TODO: 2017/6/10
-//                                                Intent intent = new Intent(Intent.ACTION_SEND);
-//                                                startActivity(intent);
-//                                            }
-//                                        })
-//                                        .create();
-//                                dg.show();
                             } else {
                                 Toast.makeText(SignIn.this, "注册失败，用户名已被使用", Toast.LENGTH_SHORT).show();
                             }

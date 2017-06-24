@@ -68,7 +68,7 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder( final ViewHolder viewHolder, final int i) {
-        viewHolder.img.setImageResource(filmCards.get(i).getImg());
+        viewHolder.img.setImageBitmap(filmCards.get(i).getImg());
         viewHolder.name.setText( filmCards.get(i).getName());
         viewHolder.type.setText( filmCards.get(i).getType());
         String rate = filmCards.get(i).getRate()+"0000000";

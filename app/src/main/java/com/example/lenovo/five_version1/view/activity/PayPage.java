@@ -39,6 +39,10 @@ public class PayPage extends AppCompatActivity {
         setContentView(R.layout.activity_pay_page);
         findViews();
         setAttr();
+        setListener();
+    }
+
+    private void setListener() {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

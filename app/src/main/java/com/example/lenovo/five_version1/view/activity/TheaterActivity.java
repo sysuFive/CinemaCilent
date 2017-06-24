@@ -2,11 +2,14 @@ package com.example.lenovo.five_version1.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -16,7 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.lenovo.five_version1.model.CinemaFilm;
 import com.example.lenovo.five_version1.controller.Controller;
 import com.example.lenovo.five_version1.R;
@@ -44,6 +51,9 @@ public class TheaterActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     TextView cinema_name, address, movie_name, movie_rate, movie_actors;
     SimpleRatingBar ratingBar;
+    Bitmap origin;
+    CinemaFilmAdapter ca;
+    ArrayList<CinemaFilm> cards;
 
     public void findViews() {
         movieslist = (RecyclerView) findViewById(R.id.movieintheaterlist);
@@ -60,6 +70,7 @@ public class TheaterActivity extends AppCompatActivity {
         cinemaId = sharedPreferences.getInt("CinemaId", -1);
         cinema_name.setText(sharedPreferences.getString("CinemaName", ""));
         address.setText(sharedPreferences.getString("location", ""));
+        origin = BitmapFactory.decodeResource(getResources(), R.drawable.none);
     }
 
     @Override
@@ -67,8 +78,11 @@ public class TheaterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theater);
         findViews();
-        setRecyclerview();
+        setFilmList();
+        setListener();
+    }
 
+    private void setListener() {
         sessionlist.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -84,7 +98,6 @@ public class TheaterActivity extends AppCompatActivity {
                 startActivity(t);
             }
         });
-
     }
 
     private void getFilms() {
@@ -101,9 +114,9 @@ public class TheaterActivity extends AppCompatActivity {
                 try {
                     int status = response.getInt("status");
                     boolean success = status == 1;
-                    CinemaFilmAdapter ca;
-                    ArrayList<CinemaFilm> cards = new ArrayList<>();
+                    cards = new ArrayList<>();
                     if (success) {
+                        findViewById(R.id.movie_container).setVisibility(View.VISIBLE);
                         JSONArray films = response.getJSONArray("message");
                         for (int i = 0; i < films.length(); ++i) {
                             JSONObject one = (JSONObject) films.get(i);
@@ -129,7 +142,7 @@ public class TheaterActivity extends AppCompatActivity {
                             int imgRid = R.drawable.test;
                             tmp.put("img", imgRid);
                             filmData.add(tmp);
-                            cards.add(new CinemaFilm(id, imgRid));
+                            cards.add(new CinemaFilm(id, origin));
                             if (i == 0) {
                                 FilmId = id;
                                 setFilmInfo(filmData, i);
@@ -152,13 +165,11 @@ public class TheaterActivity extends AppCompatActivity {
                             // TODO: 2017/6/20 make selected img bigger
                             img.setSelected(true);
                             img.setPadding(2, 3, 2, 3);
-//                            img.setMaxHeight((int)(img.getHeight()*1.2));
-//                            img.setMaxWidth((int)(img.getWidth()*1.2));
-//                            img.setAdjustViewBounds(true);
                             setSessionList();
                         }
                     });
                     movieslist.setAdapter(ca);
+                    getFilmImg();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -240,11 +251,34 @@ public class TheaterActivity extends AppCompatActivity {
         Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params, listener);
     }
 
-    public void setRecyclerview() {
+    public void setFilmList() {
         LinearLayoutManager manager = new LinearLayoutManager(TheaterActivity.this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         movieslist.setLayoutManager(manager);
         getFilms();
+    }
+
+    private void getFilmImg() {
+        for (int i = 0; i < filmData.size(); ++i) {
+            final HashMap<String, Object> one = filmData.get(i);
+            final int id  = (int)one.get("filmId");
+            String url = Controller.SERVER + "/film/" + id + "/cover/0.jpg";
+            final int finalI = i;
+            ImageRequest request = new ImageRequest(url, new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap bitmap) {
+                    cards.get(finalI).setImg(bitmap);
+                    ca.notifyDataSetChanged();
+                }
+            }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ALPHA_8, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("response error", volleyError.toString());
+                }
+            });
+            RequestQueue queue =  Volley.newRequestQueue(TheaterActivity.this);
+            queue.add(request);
+        }
     }
 
 }

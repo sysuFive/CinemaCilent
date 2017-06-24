@@ -37,12 +37,12 @@ public class SelectSeat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_seat);
         findViews();
-
-        filmName.setText(sharedPreferences.getString("filmName", ""));
-        filmTime.setText(sharedPreferences.getString("beginTime", ""));
-
+        setAttr();
         setSeat();
+        setListener();
+    }
 
+    private void setListener() {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +54,11 @@ public class SelectSeat extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    private void setAttr() {
+        filmName.setText(sharedPreferences.getString("filmName", ""));
+        filmTime.setText(sharedPreferences.getString("beginTime", ""));
     }
 
     public void findViews() {

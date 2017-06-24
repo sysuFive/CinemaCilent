@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Five_version1.iml" filepath="$PROJECT_DIR$/Five_version1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CinemaCilent.iml" filepath="$PROJECT_DIR$/CinemaCilent.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidelibrary/slidelibrary.iml" filepath="$PROJECT_DIR$/slidelibrary/slidelibrary.iml" />
     </modules>

@@ -56,21 +56,8 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 
 public class MainPage extends SlidingFragmentActivity {
-    private String bestProvider = LocationManager.NETWORK_PROVIDER;
-    private LocationManager locationManager = null;
-    private Location curLocation = null;
-    double latitude = -1;
-    double longitude = -1;
-    CinemaAdapter cinemaAdapter;
-    String urlHead = "http://apis.map.qq.com/ws/geocoder/v1/?location=";
-    String urlEnd = "&key=34GBZ-4NOCO-FUHWJ-SPXD5-AZHGZ-TYFYN&get_poi=0";
-    RequestQueue requestQueue = null;
-    String address = "", city = "";
     int cityCode = 0;
     int page = 0;
-
-    SharedPreferences sharedPreferences;
-    int MODE = 0;
     int FILM = 0;
     int CINEMA = 1;
 
@@ -81,30 +68,45 @@ public class MainPage extends SlidingFragmentActivity {
     private TextView position;
     private View view1,view2;
     private List<View> viewList;//view数组
-    ArrayList<HashMap<String, Object>> filmData, cinemaData;
-    ArrayList<FilmCard> cards;
-    ArrayList<CinemaCard> theatercards;
-    Map<Integer, String> cinemaUrls, filmUrls;
     private FloatingActionButton fab;
-    Bitmap origin;
 
-    public void findview() {
+    ArrayList<HashMap<String, Object>> filmData, cinemaData;
+    ArrayList<FilmCard> filmCards;
+    ArrayList<CinemaCard> cinemaCards;
+    CinemaAdapter cinemaAdapter;
+    FilmAdapter filmAdapter;
+    Bitmap origin;
+    SharedPreferences sharedPreferences;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_page);
+        findViews();
+        getCity();
+        init();
+        setViewPager();
+        setListener();
+        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
+    }
+
+
+    public void findViews() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tolocate = (Button) findViewById(R.id.tolocate);
         position = (TextView) findViewById(R.id.pos);
         filmData = new ArrayList<>();
         cinemaData = new ArrayList<>();
-        cards = new ArrayList<>();
-        theatercards = new ArrayList<>();
+        filmCards = new ArrayList<>();
+        cinemaCards = new ArrayList<>();
         sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.bringToFront();
-        cinemaUrls = new HashMap<>();
         origin = BitmapFactory.decodeResource(getResources(), R.drawable.none);
     }
 
-    public void initleftmenu() {
+    public void initLeftMenu() {
         MenuLeftFragment leftMenuFragment = new MenuLeftFragment();
         setBehindContentView(R.layout.left_menu_frame);
         getSupportFragmentManager().beginTransaction()
@@ -129,33 +131,35 @@ public class MainPage extends SlidingFragmentActivity {
             }
         });
     }
+
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-       // System.out.println("按下了back键   onBackPressed()");
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
+
     public void init() {
         getFilms();
         getCinemas();
-        initleftmenu();
+        initLeftMenu();
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page);
-        findview();
-        getCity();
-        init();
-        setViewPager();
-        setlistener();
-        sharedPreferences = getSharedPreferences("Setting", MODE_PRIVATE);
-    }
+    
 
-    public  void setlistener() {
+    public  void setListener() {
         position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getCity();
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainPage.this, SearchActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -222,12 +226,12 @@ public class MainPage extends SlidingFragmentActivity {
         }
     }
 
-    public void setRecyclerview() {
+    public void setFilmList() {
         LinearLayoutManager manager = new LinearLayoutManager(MainPage.this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(manager);
 
-        FilmAdapter sa = new FilmAdapter(MainPage.this, cards);
+        FilmAdapter sa = new FilmAdapter(MainPage.this, filmCards);
         sa.setOnItemClickListener(new FilmAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, FilmCard item) {
@@ -246,14 +250,15 @@ public class MainPage extends SlidingFragmentActivity {
             }
         });
         list.setAdapter(sa);
+        getFilmImg();
     }
 
-    public void setTheaterRecyclerview() {
+    public void setCinemaList() {
         LinearLayoutManager manager = new LinearLayoutManager(MainPage.this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         theaterlist.setLayoutManager(manager);
 
-        cinemaAdapter = new CinemaAdapter(MainPage.this, theatercards);
+        cinemaAdapter = new CinemaAdapter(MainPage.this, cinemaCards);
         cinemaAdapter.setOnItemClickListener(new CinemaAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, CinemaCard item) {
@@ -268,69 +273,13 @@ public class MainPage extends SlidingFragmentActivity {
             }
         });
         theaterlist.setAdapter(cinemaAdapter);
-
-    }
-
-    private void getLatLon() {
-        if (!checkPermission())
-            return;
-        locationManager.requestLocationUpdates(bestProvider, 0, 0, locationListener);
-        locationManager.getLastKnownLocation(bestProvider);
-        curLocation = locationManager.getLastKnownLocation(bestProvider);
-        if (curLocation != null) {
-            latitude = curLocation.getLatitude();
-            longitude = curLocation.getLongitude();
-        }
+        getCinemaImg();
     }
 
     private void getCity() {
         cityCode = CityService.cityCode;
         position.setText(CityService.city);
-
     }
-
-    // return true if PERMISSION_GRANTED else false
-    private boolean checkPermission() {
-        return !(ActivityCompat.checkSelfPermission(MainPage.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(MainPage.this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED);
-    }
-
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (!checkPermission())
-                            return;
-                        locationManager.getLastKnownLocation(bestProvider);
-                        curLocation = locationManager.getLastKnownLocation(bestProvider);
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            try {
-                if (curLocation == null) {
-                    if (!checkPermission())
-                        return;
-                    curLocation = locationManager.getLastKnownLocation(bestProvider);
-                }
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
-        @Override
-        public void onProviderEnabled(String provider) {}
-        @Override
-        public void onProviderDisabled(String provider) {}
-    };
 
     private void getFilms() {
         final Map<String, String> params = new HashMap<>();
@@ -369,9 +318,9 @@ public class MainPage extends SlidingFragmentActivity {
                             int imgRid = R.drawable.none;
                             tmp.put("img", imgRid);
                             filmData.add(tmp);
-                            cards.add(new FilmCard(name, type, actors, rate, imgRid));
+                            filmCards.add(new FilmCard(name, type, actors, rate, origin));
                         }
-                        setRecyclerview();
+                        setFilmList();
                     } else {
                         Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
                     }
@@ -413,12 +362,9 @@ public class MainPage extends SlidingFragmentActivity {
                             tmp.put("phone", phone);
                             tmp.put("CinemaId", one.get("id"));
                             cinemaData.add(tmp);
-                            // TODO: 2017/6/10  get img
-                            int rid = R.drawable.theater;
-                            theatercards.add(new CinemaCard(name, address, phone, origin));
+                            cinemaCards.add(new CinemaCard(name, address, phone, origin));
                         }
-                        setTheaterRecyclerview();
-                        getCinemaImgUrls();
+                        setCinemaList();
                     } else {
                         Toast.makeText(MainPage.this, response.getString("message"), Toast.LENGTH_LONG).show();
                     }
@@ -431,44 +377,39 @@ public class MainPage extends SlidingFragmentActivity {
         Controller.sendRequest(getApplicationContext(), Request.Method.POST, url, params,listener);
     }
 
-    private void getCinemaImgUrls() {
-        for (int i = 0; i < cinemaData.size(); ++i) {
-            final HashMap<String, Object> one = cinemaData.get(i);
-            final int id  = (int)one.get("CinemaId");
-            String url = Controller.SERVER + Controller.CINEMAPIC + id;
+    private void getFilmImg() {
+        for (int i = 0; i < filmData.size(); ++i) {
+            final HashMap<String, Object> one = filmData.get(i);
+            final int id  = (int)one.get("filmId");
+            String url = Controller.SERVER + "/film/" + id + "/cover/0.jpg";
             final int finalI = i;
-            Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+            ImageRequest request = new ImageRequest(url, new Response.Listener<Bitmap>() {
                 @Override
-                public void onResponse(JSONObject jsonObject) {
-                    try {
-                        int status = jsonObject.getInt("status");
-                        boolean success = status == 1;
-                        if (success) {
-                            JSONArray films = jsonObject.getJSONArray("message");
-                            JSONObject json = (JSONObject) films.get(0);
-                            cinemaUrls.put(finalI, json.getString("path"));
-                            setTheaterRecyclerview();
-                            if (finalI == cinemaData.size() -1)
-                                getCinemaImg();
-                        } else {
-                            Toast.makeText(MainPage.this, jsonObject.getString("message"), Toast.LENGTH_LONG).show();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                public void onResponse(Bitmap bitmap) {
+                    filmCards.get(finalI).setImg(bitmap);
+                    filmAdapter.notifyDataSetChanged();
                 }
-            };
-            Controller.sendRequestWithGET(MainPage.this, url, listener);
+            }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ALPHA_8, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e("response error", volleyError.toString());
+                }
+            });
+            RequestQueue queue =  Volley.newRequestQueue(MainPage.this);
+            queue.add(request);
         }
     }
 
     private void getCinemaImg() {
-        Set<Integer> ids = cinemaUrls.keySet();
-        for (final int i : ids) {
-            ImageRequest request = new ImageRequest(cinemaUrls.get(i), new Response.Listener<Bitmap>() {
+        for (int i = 0; i < cinemaData.size(); ++i) {
+            final HashMap<String, Object> one = cinemaData.get(i);
+            final int id  = (int)one.get("CinemaId");
+            String url = Controller.SERVER + "/cinema/" + id + "/cover/0.jpg";
+            final int finalI = i;
+            ImageRequest request = new ImageRequest(url, new Response.Listener<Bitmap>() {
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    theatercards.get(i).setBitmap(bitmap);
+                    cinemaCards.get(finalI).setBitmap(bitmap);
                     cinemaAdapter.notifyDataSetChanged();
                 }
             }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ALPHA_8, new Response.ErrorListener() {
